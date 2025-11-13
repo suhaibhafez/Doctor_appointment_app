@@ -1,0 +1,28 @@
+// ignore_for_file: constant_identifier_names
+
+enum AllergyType {
+  None,
+  Penicillin,
+  Amoxicillin,
+  SulfaDrugs,
+  NSAIDs,
+  Aspirin,
+  Codeine,
+  Morphine,
+  Latex,
+  Peanuts,
+  TreeNuts,
+  Shellfish,
+  Fish,
+  Eggs,
+  Milk,
+  Soy,
+  Wheat,
+  Pollen,
+  DustMites,
+  Mold,
+  PetDander,
+  BeeStings,
+  InsectStings,
+  Other,
+}

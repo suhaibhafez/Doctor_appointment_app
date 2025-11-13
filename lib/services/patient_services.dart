@@ -1,0 +1,214 @@
+import 'package:dio/dio.dart';
+import 'package:doctor_appointment_app/models/Patient/allergy.dart';
+import 'package:doctor_appointment_app/models/Patient/billing.dart';
+import 'package:doctor_appointment_app/models/Patient/chronic_disease.dart';
+import 'package:doctor_appointment_app/models/Patient/medical_record.dart';
+import 'package:doctor_appointment_app/models/Patient/patient.dart';
+import 'package:doctor_appointment_app/view_model/dio.dart';
+import 'package:doctor_appointment_app/services/local_storage_services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class PatientService {
+  static Future<String> login(
+    String email,
+    String password,
+    Ref ref,
+  ) async {
+    final dio = ref.read(dioProvider);
+    final response = await dio.post(
+      '/users/login',
+      data: {
+        'email': email,
+        'password': password,
+      },
+    );
+
+    final token = response.data['accessToken'];
+    return token;
+  }
+
+  static Future<bool> logout() => LocalStorageService.clearToken();
+
+  static Future<Patient> getPatient(String token, Ref ref) async {
+    final dio = ref.read(dioProvider);
+    final response = await dio.get(
+      '/patients/me',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+    return Patient.fromPatientJson(response.data['data']);
+  }
+
+  static Future<void> registerPatient(
+    Ref ref, {
+    required String nationaID,
+    required String phoneNumber,
+    required String password,
+    required String email,
+  }) async {
+    final dio = ref.read(dioProvider);
+    await dio.post(
+      '/users/register-patient',
+      data: {
+        "phoneNumber": phoneNumber,
+        "nationalId": int.parse(nationaID),
+        "email": email,
+        "password": password,
+      },
+    );
+  }
+  
+  static Future<List<ChronicDisease>>getChronicDiseases(Ref ref,String token)async{
+    final dio = ref.read(dioProvider);
+    final response = await dio.get('/patients/me/chronic-diseases',options: Options(
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    ));
+    final data = (response.data['data'] as List?) ?? <ChronicDisease>[];
+    final chronicDiseases = data.map((e) => ChronicDisease.fromJson(e)).toList();
+    return chronicDiseases;
+  }
+  
+   static Future<List<Allergy>> getAllergies(
+    Ref ref,
+    String token,
+  ) async {
+    final dio = ref.read(dioProvider);
+    final response = await dio.get(
+      '/patients/me/allergies',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+    final data = (response.data['data'] as List?) ?? <ChronicDisease>[];
+    final allergies = data
+        .map((e) => Allergy.fromJson(e))
+        .toList();
+    return allergies;
+ 
+ 
+  }
+ 
+  static Future<void> deleteChronicDisease(
+    Ref ref,
+    String token,
+    String chronicDiseaseId
+  ) async {
+    final dio = ref.read(dioProvider);
+    await dio.delete(
+      '/patients/me/chronic-diseases/$chronicDiseaseId',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+   
+  }
+  
+   static Future<void> deleteAllergy(
+    Ref ref,
+    String token,
+    String allergyId,
+  ) async {
+    final dio = ref.read(dioProvider);
+    await dio.delete(
+      '/patients/me/allergies/$allergyId',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+  }
+   
+   static Future<ChronicDisease> addChronicDisease(
+    Ref ref,
+    String token,
+   int chronicDiseaseNumber
+  ) async {
+    final dio = ref.read(dioProvider);
+    final response=await dio.post(
+      '/patients/me/chronic-diseases',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+        
+      ),
+      data: {
+        "chronicDisease": chronicDiseaseNumber
+
+      }
+    );
+    return ChronicDisease.fromJson(response.data['data']);
+  }
+ 
+  static Future<Allergy> addAllergy(
+    Ref ref,
+    String token,
+    int allergyNumber,
+  ) async {
+    final dio = ref.read(dioProvider);
+    final response=await dio.post(
+      '/patients/me/allergies',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+      data: {"allergy": allergyNumber},
+    );
+    return Allergy.fromJson(response.data['data']);
+  }
+
+  static Future<List<Billing>> getBillings(String token, Ref ref,int page, int pageSize) async {
+    final dio = ref.read(dioProvider);
+    final response = await dio.get(
+      '/patients/me/billings',
+      queryParameters: {
+          'page': page,
+        'pagesize': pageSize,
+        'Sort':'PaymentDate',
+        'Status':'Paid'
+      },
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+   final data = (response.data['data'] as List?) ?? <Billing>[];
+    final billings = data.map((e) => Billing.fromBillingAPi(e)).toList();
+    return billings;
+ 
+  }
+
+
+    static Future<List<MedicalRecord>> getMedicalRecord(
+    String token,
+    Ref ref,
+    
+  ) async {
+    final dio = ref.read(dioProvider);
+    final response = await dio.get(
+      '/patients/me/medical-records',
+      
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+    final data = (response.data['data'][0]['medicalRecord'] as List?) ?? <MedicalRecord>[];
+    final medicalRecords = data.map((e) => MedicalRecord.fromJson(e)).toList();
+    return medicalRecords;
+  }
+
+}
