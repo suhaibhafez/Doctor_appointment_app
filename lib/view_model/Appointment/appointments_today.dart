@@ -4,7 +4,7 @@ import 'package:doctor_appointment_app/services/local_storage_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final appointmentstodayProvider =
-    FutureProvider.autoDispose<List<Appointment>>((ref) async {
+    FutureProvider<List<Appointment>>((ref) async {
       final token = LocalStorageService.getToken;
       final appointments = await AppointmentServices.getTodaysAppointments(
         ref: ref,

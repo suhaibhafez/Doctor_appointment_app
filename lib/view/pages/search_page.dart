@@ -80,64 +80,70 @@ class _SearchPage extends State<SearchPage>
   @override
   Widget build(BuildContext context) {
     Config().init(context);
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 20),
-        child: Column(
-          children: [
-            Text(
-              AppLocalizations.of(context)!.search,
-              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
-            ),
-            Config.spaceSmall,
-            TabBar(
-              onTap: (value) {
-                setState(() {
-                  _tabController.animateTo(
-                    value,
-                    duration: const Duration(milliseconds: 400),
-                  );
-                });
-              },
-
-              controller: _tabController,
-              // unselectedLabelColor: Colors.black,
-              // labelColor: Colors.black,
-              dividerColor: Colors.transparent,
-              indicatorColor: Colors.transparent,
-
-              overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-              tabs: [
-                buildCustomTab(
-                  context,
-                  _tabController.index,
-                  index: 0,
-                  label: AppLocalizations.of(context)!.doctors,
-                ),
-                buildCustomTab(
-                  context,
-                  _tabController.index,
-                  index: 1,
-                  label: AppLocalizations.of(context)!.facilities,
-                ),
-              ],
-            ),
-            Config.spaceMedium,
-
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TabBarView(
-                  controller: _tabController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: const [DoctorSearch(), FacilitySearch()],
+    return GestureDetector(
+        onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      behavior: HitTestBehavior.translucent,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 20),
+          child: Column(
+            children: [
+              Text(
+                AppLocalizations.of(context)!.search,
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
                 ),
               ),
-            ),
-          ],
+              Config.spaceSmall,
+              TabBar(
+                onTap: (value) {
+                  setState(() {
+                    _tabController.animateTo(
+                      value,
+                      duration: const Duration(milliseconds: 400),
+                    );
+                  });
+                },
+      
+                controller: _tabController,
+                // unselectedLabelColor: Colors.black,
+                // labelColor: Colors.black,
+                dividerColor: Colors.transparent,
+                indicatorColor: Colors.transparent,
+      
+                overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+                tabs: [
+                  buildCustomTab(
+                    context,
+                    _tabController.index,
+                    index: 0,
+                    label: AppLocalizations.of(context)!.doctors,
+                  ),
+                  buildCustomTab(
+                    context,
+                    _tabController.index,
+                    index: 1,
+                    label: AppLocalizations.of(context)!.facilities,
+                  ),
+                ],
+              ),
+              Config.spaceMedium,
+      
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TabBarView(
+                    controller: _tabController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: const [DoctorSearch(), FacilitySearch()],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

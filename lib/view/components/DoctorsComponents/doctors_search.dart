@@ -102,7 +102,7 @@ class DoctorSearchState extends ConsumerState<DoctorSearch> {
             ),
             Expanded(
               child: MenuAnchor(
-                
+                useRootOverlay: true,
                 style: const MenuStyle(
                   maximumSize: WidgetStatePropertyAll(Size.fromHeight(250)),
                 ),
@@ -158,10 +158,10 @@ class DoctorSearchState extends ConsumerState<DoctorSearch> {
                       await notifier.updateSpecialization(e.index);
                     },
                     child: Padding(
-                      padding: const EdgeInsets.all(4.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
-                        spacing: 4,
+                        spacing: 6,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Icon(

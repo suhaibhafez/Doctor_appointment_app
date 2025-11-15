@@ -118,6 +118,8 @@ class FacilitySearchState extends ConsumerState<FacilitySearch> {
                               },
                               icon: const Icon(Icons.close),
                             ),
+                        if (notifier.type == null)
+
                           IconButton(
                             icon: const Icon(Icons.arrow_drop_down),
                             onPressed: () {
@@ -146,7 +148,7 @@ class FacilitySearchState extends ConsumerState<FacilitySearch> {
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
-                        spacing: 4,
+                        spacing: 6,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Icon(

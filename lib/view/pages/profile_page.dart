@@ -168,14 +168,21 @@ class PatientDetailsSection extends ConsumerWidget {
                                 ),
                               ),
                               const SizedBox(height: 8),
+
                               Text(
-                                DateFormat(
-                                  'yyyy-MM-dd',
-                                ).format(patient.dateOfBirth!),
+                                patient.nationalId,
                                 style: textTheme.bodyMedium!.copyWith(
                                   fontWeight: FontWeight.w500,
                                   color: theme.colorScheme.primary,
                                 ),
+                              ),
+
+                              const SizedBox(height: 4),
+                              Text(
+                                DateFormat(
+                                  'yyyy-MM-dd',
+                                ).format(patient.dateOfBirth!),
+                                style: textTheme.bodyMedium,
                               ),
                               const SizedBox(height: 4),
                               Text(
@@ -229,7 +236,7 @@ class PatientDetailsSection extends ConsumerWidget {
                       child: CoolButton(
                         isSmall: isSmall,
                         onclick: () async {
-                        await  Get.toNamed(Sroutes.medicalRecordPage);
+                          await Get.toNamed(Sroutes.medicalRecordPage);
                         },
                         text: "Medical History",
                         icon: const Icon(Icons.history),
@@ -239,8 +246,8 @@ class PatientDetailsSection extends ConsumerWidget {
                     Expanded(
                       child: CoolButton(
                         isSmall: isSmall,
-                        onclick:() async {
-                        await  Get.toNamed(Sroutes.billingPage);
+                        onclick: () async {
+                          await Get.toNamed(Sroutes.billingPage);
                         },
                         icon: const Icon(
                           Icons.receipt_long,
@@ -398,7 +405,7 @@ class SettingsSection extends ConsumerWidget {
                       Icons.logout_outlined,
                     ),
                     text: AppLocalizations.of(context)!.logout,
-                    backgroundColor: theme.colorScheme.surface,
+                    backgroundColor: theme.colorScheme.surface.withAlpha(255),
                     forGroundColor: theme.colorScheme.error,
                     borderColor: theme.colorScheme.error.withAlpha(110),
                   ),
@@ -573,7 +580,7 @@ class ChronicDiseaseSection extends ConsumerWidget {
                       onclick: () {
                         Get.back();
                       },
-                      icon: const Icon(Icons.close),
+
                       text: 'Cancel',
                       backgroundColor: theme.colorScheme.surface,
                       forGroundColor: theme.colorScheme.error,
@@ -600,7 +607,6 @@ class ChronicDiseaseSection extends ConsumerWidget {
                                   );
                                 },
                           text: 'Add Selected',
-                          icon: const Icon(Icons.add),
                         );
                       },
                     ),
@@ -631,7 +637,7 @@ class ChronicDiseaseSection extends ConsumerWidget {
           spacing: 8,
           runSpacing: 8,
           alignment: WrapAlignment.start,
-
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             ...chronicDiseases.map(
               (e) => Chip(
@@ -838,7 +844,7 @@ class AllergySection extends ConsumerWidget {
                       onclick: () {
                         Get.back();
                       },
-                      icon: const Icon(Icons.close),
+
                       text: 'Cancel',
                       backgroundColor: theme.colorScheme.surface,
                       forGroundColor: theme.colorScheme.error,
@@ -865,7 +871,6 @@ class AllergySection extends ConsumerWidget {
                                   );
                                 },
                           text: 'Add Selected',
-                          icon: const Icon(Icons.add),
                         );
                       },
                     ),
@@ -896,6 +901,8 @@ class AllergySection extends ConsumerWidget {
           spacing: 8,
           runSpacing: 8,
           alignment: WrapAlignment.start,
+          crossAxisAlignment: WrapCrossAlignment.center,
+
           children: [
             ...allergies.map(
               (e) => Chip(

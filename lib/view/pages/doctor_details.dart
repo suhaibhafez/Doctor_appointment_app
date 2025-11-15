@@ -92,7 +92,7 @@ class DoctorDetails extends ConsumerWidget {
                   title: AppLocalizations.of(context)!.bookAppointment,
                   disabled: false,
                   onPressed: () async {
-                    await Get.toNamed(Sroutes.bookingPage);
+                    await Get.toNamed(Sroutes.bookingPage,parameters: {'docId':data.id,'facId':data.healthCareFacilityId!});
                   },
                 ),
               ],

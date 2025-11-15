@@ -28,7 +28,7 @@ class Config {
 
   static const Color primaryColor = Color(0xFF2E7D9E); // Calm teal-blue
   static const Color accentColor = Color(0xFF53C1B0); // Mint accent
-  static const Color backgroundLight = Color(0xFFE6EEF1); // soft cool blue-gray
+  static const Color backgroundLight = Color.fromARGB(255, 214, 234, 241); // soft cool blue-gray
   static const Color surfaceLight = Color(0xFFFFFFFF); // pure white surface
 
   static const Color backgroundDark = Color(0xFF0E1A1C); // deep teal-black tone

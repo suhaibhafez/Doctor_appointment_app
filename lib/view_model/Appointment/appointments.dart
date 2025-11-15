@@ -24,7 +24,7 @@ class AppointmentsNotifier extends AsyncNotifier<List<Appointment>> {
 
   Future<List<Appointment>> fetchPage({required int page}) {
     final token = LocalStorageService.getToken;
-  
+
     return AppointmentServices.getAppointmentsByStatus(
       page: page,
       ref: ref,
@@ -74,6 +74,34 @@ class AppointmentsNotifier extends AsyncNotifier<List<Appointment>> {
     this.status = status;
 
     await refresh();
+  }
+
+  Future<void> addAppointment(
+    String doctorId,
+    String facilityId,
+    String schduleDate,
+    String schduleTime,
+    int durationMinutes,
+  ) async {
+    state = const AsyncValue.loading();
+    final token = LocalStorageService.getToken;
+    print('everything before booking appointment  $doctorId $facilityId $schduleDate $schduleTime $durationMinutes');
+
+    try {
+      final newAppointment = await AppointmentServices.bookAppointment(
+        ref,
+        token!,
+        doctorId,
+        facilityId,
+        schduleDate,
+        schduleTime,
+        durationMinutes,
+      );
+      state = AsyncValue.data([newAppointment, ...state.value ?? []]);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+      rethrow;
+    }
   }
 }
 

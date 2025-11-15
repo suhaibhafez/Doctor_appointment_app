@@ -1,4 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:doctor_appointment_app/models/Doctor/doctor.dart';
+import 'package:doctor_appointment_app/models/Doctor/doctor_capacity.dart';
+import 'package:doctor_appointment_app/models/Doctor/doctor_exception_schedule.dart';
+import 'package:doctor_appointment_app/models/Doctor/doctor_schedule.dart';
 import 'package:doctor_appointment_app/view_model/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,6 +42,63 @@ class DoctorService {
     final doctors = data.map((e) => Doctor.fromDoctorApi(e)).toList();
     return doctors;
   }
+
+  static Future<DoctorCapacity> getDoctorCapacity(
+      String id, Ref ref,String token) async {
+    final dio = ref.read(dioProvider);
+    final response = await dio.get('/doctors/$id/treatment-capacity',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+    return DoctorCapacity.fromJson(response.data['data']);
+  }
+  
+   static Future<List<DoctorSchedule>> getDoctorSchedule(
+    String id,
+    Ref ref,
+    String token,
+  ) async {
+    final dio = ref.read(dioProvider);
+    final response = await dio.get(
+      '/doctors/$id/schedules',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+   final data =
+        (response.data['data'] as List?) ??
+        <DoctorSchedule>[];
+    final schedules = data.map((e) => DoctorSchedule.fromJson(e)).toList();
+    return schedules;
+  }
+
+
+     static Future<List<DoctorExceptionSchedule>> getDoctorScheduleException(
+    String id,
+    Ref ref,
+    String token,
+  ) async {
+    final dio = ref.read(dioProvider);
+    final response = await dio.get(
+      '/doctors/$id/schedule-exceptions',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
+    final data =
+        (response.data['data'] as List?) ??
+        <DoctorExceptionSchedule>[];
+    final schedules = data.map((e) => DoctorExceptionSchedule.fromJson(e)).toList();
+    return schedules;
+  }
+
 }
 
 // adjust import to your app

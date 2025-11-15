@@ -1,5 +1,3 @@
-// ignore_for_file: file_names
-
 
 import 'package:doctor_appointment_app/models/Appointment/appointment.dart';
 import 'package:doctor_appointment_app/routes/routes.dart';
@@ -7,8 +5,6 @@ import 'package:doctor_appointment_app/utils/config.dart';
 import 'package:doctor_appointment_app/utils/enums/specialitiez_facilities.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-
 
 class AppointmentCard extends StatelessWidget {
   final Appointment appointment;
@@ -34,9 +30,9 @@ class AppointmentCard extends StatelessWidget {
   }
 
   // 🟨 Status color
-  
+
   // 🟦 Status badge
- 
+
   // 🟧 Action buttons depending on status
   List<Widget> _actionButtons(BuildContext context) {
     final isPendingOrConfirmed = [
@@ -103,9 +99,8 @@ class AppointmentCard extends StatelessWidget {
     );
 
     return Card(
-     
       elevation: 5,
-      
+
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
@@ -191,11 +186,11 @@ class AppointmentCard extends StatelessWidget {
             Align(
               alignment: AlignmentGeometry.centerRight,
               child: TextButton.icon(
-                onPressed:() async {
-                        await Get.toNamed(
-                          '${Sroutes.appointmentDetails}/${appointment.id}',
-                        );
-                      },
+                onPressed: () async {
+                  await Get.toNamed(
+                    '${Sroutes.appointmentDetails}/${appointment.id}',
+                  );
+                },
                 label: const Text('More info'),
                 icon: const Icon(Icons.info_outline),
                 style: TextButton.styleFrom(
@@ -209,6 +204,7 @@ class AppointmentCard extends StatelessWidget {
     );
   }
 }
+
 Widget statusChip(String status, BuildContext context) {
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -226,6 +222,7 @@ Widget statusChip(String status, BuildContext context) {
     ),
   );
 }
+
 Color statusColor(String status, BuildContext context) {
   final theme = Theme.of(context);
   switch (status.toLowerCase()) {

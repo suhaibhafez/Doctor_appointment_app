@@ -60,20 +60,28 @@ class PatientService {
       },
     );
   }
-  
-  static Future<List<ChronicDisease>>getChronicDiseases(Ref ref,String token)async{
+
+  static Future<List<ChronicDisease>> getChronicDiseases(
+    Ref ref,
+    String token,
+  ) async {
     final dio = ref.read(dioProvider);
-    final response = await dio.get('/patients/me/chronic-diseases',options: Options(
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    ));
+    final response = await dio.get(
+      '/patients/me/chronic-diseases',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+    );
     final data = (response.data['data'] as List?) ?? <ChronicDisease>[];
-    final chronicDiseases = data.map((e) => ChronicDisease.fromJson(e)).toList();
+    final chronicDiseases = data
+        .map((e) => ChronicDisease.fromJson(e))
+        .toList();
     return chronicDiseases;
   }
-  
-   static Future<List<Allergy>> getAllergies(
+
+  static Future<List<Allergy>> getAllergies(
     Ref ref,
     String token,
   ) async {
@@ -87,18 +95,14 @@ class PatientService {
       ),
     );
     final data = (response.data['data'] as List?) ?? <ChronicDisease>[];
-    final allergies = data
-        .map((e) => Allergy.fromJson(e))
-        .toList();
+    final allergies = data.map((e) => Allergy.fromJson(e)).toList();
     return allergies;
- 
- 
   }
- 
+
   static Future<void> deleteChronicDisease(
     Ref ref,
     String token,
-    String chronicDiseaseId
+    String chronicDiseaseId,
   ) async {
     final dio = ref.read(dioProvider);
     await dio.delete(
@@ -109,10 +113,9 @@ class PatientService {
         },
       ),
     );
-   
   }
-  
-   static Future<void> deleteAllergy(
+
+  static Future<void> deleteAllergy(
     Ref ref,
     String token,
     String allergyId,
@@ -127,36 +130,32 @@ class PatientService {
       ),
     );
   }
-   
-   static Future<ChronicDisease> addChronicDisease(
+
+  static Future<ChronicDisease> addChronicDisease(
     Ref ref,
     String token,
-   int chronicDiseaseNumber
+    int chronicDiseaseNumber,
   ) async {
     final dio = ref.read(dioProvider);
-    final response=await dio.post(
+    final response = await dio.post(
       '/patients/me/chronic-diseases',
       options: Options(
         headers: {
           'Authorization': 'Bearer $token',
         },
-        
       ),
-      data: {
-        "chronicDisease": chronicDiseaseNumber
-
-      }
+      data: {"chronicDisease": chronicDiseaseNumber},
     );
     return ChronicDisease.fromJson(response.data['data']);
   }
- 
+
   static Future<Allergy> addAllergy(
     Ref ref,
     String token,
     int allergyNumber,
   ) async {
     final dio = ref.read(dioProvider);
-    final response=await dio.post(
+    final response = await dio.post(
       '/patients/me/allergies',
       options: Options(
         headers: {
@@ -168,15 +167,20 @@ class PatientService {
     return Allergy.fromJson(response.data['data']);
   }
 
-  static Future<List<Billing>> getBillings(String token, Ref ref,int page, int pageSize) async {
+  static Future<List<Billing>> getBillings(
+    String token,
+    Ref ref,
+    int page,
+    int pageSize,
+  ) async {
     final dio = ref.read(dioProvider);
     final response = await dio.get(
       '/patients/me/billings',
       queryParameters: {
-          'page': page,
+        'page': page,
         'pagesize': pageSize,
-        'Sort':'PaymentDate',
-        'Status':'Paid'
+        'Sort': 'PaymentDate',
+        'Status': 'Paid',
       },
       options: Options(
         headers: {
@@ -184,29 +188,28 @@ class PatientService {
         },
       ),
     );
-   final data = (response.data['data'] as List?) ?? <Billing>[];
+    final data = (response.data['data'] as List?) ?? <Billing>[];
     final billings = data.map((e) => Billing.fromBillingAPi(e)).toList();
     return billings;
- 
   }
 
-
-    static Future<List<MedicalRecord>> getMedicalRecord(
+  static Future<List<MedicalRecord>> getMedicalRecord(
     String token,
     Ref ref,
-    
   ) async {
     final dio = ref.read(dioProvider);
     final response = await dio.get(
       '/patients/me/medical-records',
-      
+
       options: Options(
         headers: {
           'Authorization': 'Bearer $token',
         },
       ),
     );
-    final data = (response.data['data'][0]['medicalRecord'] as List?) ?? <MedicalRecord>[];
+    final data =
+        (response.data['data'][0]['medicalRecord'] as List?) ??
+        <MedicalRecord>[];
     final medicalRecords = data.map((e) => MedicalRecord.fromJson(e)).toList();
     return medicalRecords;
   }

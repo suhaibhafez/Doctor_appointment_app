@@ -8,7 +8,6 @@ import 'package:doctor_appointment_app/utils/config.dart';
 import 'package:doctor_appointment_app/view/components/Common/custom_appbar.dart';
 import 'package:doctor_appointment_app/view/components/DoctorsComponents/doctor_card.dart';
 import 'package:doctor_appointment_app/view/components/FacilitiesComponents/facility_map_part.dart';
-import 'package:doctor_appointment_app/view/components/Common/loading.dart';
 import 'package:doctor_appointment_app/view/components/Common/shimmer.dart';
 import 'package:doctor_appointment_app/view/pages/search_page.dart';
 import 'package:flutter/material.dart';
@@ -57,12 +56,13 @@ class FacilityDetails extends ConsumerWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        _AboutFacility(facility: data),
-                        Config.spaceSmall,
-                        FacilityMapPart(
-                         lat: data.gpsLatitude!,
-                         long: data.gpsLongitude!,
-                        ),
+                        // _AboutFacility(facility: data),
+                        // Config.spaceSmall,
+                        // FacilityMapPart(
+                        //  lat: data.gpsLatitude!,
+                        //  long: data.gpsLongitude!,
+                        // ),
+                        _AboutFacilityAndMap(facility: data),
                         Config.spaceMedium,
                         _DepartmentsPart(facilityId: data.id),
                       ],
@@ -152,7 +152,7 @@ class _DepartmentsPart extends HookConsumerWidget {
                   error: (error, stackTrace) => Center(
                     child: Text(error.toString()),
                   ),
-                  loading: () => const Loading(),
+                  loading: () => const ShimmerDoctorCard(),
                 ),
           ],
         );
@@ -160,19 +160,22 @@ class _DepartmentsPart extends HookConsumerWidget {
       error: (error, stackTrace) => Center(
         child: Text(error.toString()),
       ),
-      loading: () => const Loading(),
+      loading: () => const Center(
+        child: CircularProgressIndicator.adaptive(),
+      ),
     );
   }
 }
 
-// 🏥 About Facility Section
-class _AboutFacility extends StatelessWidget {
+// 🏥 About Facility + Map Combined Section
+class _AboutFacilityAndMap extends StatelessWidget {
   final Facility facility;
-  const _AboutFacility({required this.facility});
+  const _AboutFacilityAndMap({required this.facility});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -182,6 +185,7 @@ class _AboutFacility extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Title
             Text(
               facility.name,
               style: theme.textTheme.headlineSmall?.copyWith(
@@ -189,7 +193,10 @@ class _AboutFacility extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
+
             const SizedBox(height: 8),
+
+            // Address
             Row(
               children: [
                 const Icon(Icons.location_on_outlined, size: 18),
@@ -202,7 +209,10 @@ class _AboutFacility extends StatelessWidget {
                 ),
               ],
             ),
+
             const SizedBox(height: 6),
+
+            // City + Country
             Row(
               children: [
                 const Icon(Icons.public, size: 18),
@@ -213,7 +223,10 @@ class _AboutFacility extends StatelessWidget {
                 ),
               ],
             ),
+
             const SizedBox(height: 6),
+
+            // Type
             Row(
               children: [
                 const Icon(Icons.local_hospital_outlined, size: 18),
@@ -223,6 +236,14 @@ class _AboutFacility extends StatelessWidget {
                   style: theme.textTheme.bodyMedium,
                 ),
               ],
+            ),
+
+            const SizedBox(height: 16),
+
+            // 🔹 MAP PART INSIDE SAME CARD
+            FacilityMapPart(
+              lat: facility.gpsLatitude!,
+              long: facility.gpsLongitude!,
             ),
           ],
         ),

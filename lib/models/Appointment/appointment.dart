@@ -1,6 +1,7 @@
 import 'package:doctor_appointment_app/models/Doctor/doctor.dart';
 import 'package:doctor_appointment_app/models/Facility/facility.dart';
 import 'package:doctor_appointment_app/models/Patient/patient.dart';
+import 'package:doctor_appointment_app/utils/enums/specialitiez_facilities.dart';
 
 class Appointment {
   final String id;
@@ -28,19 +29,20 @@ class Appointment {
   });
 
   factory Appointment.fromJson(Map<String, dynamic> json) {
+    final normalized = {
+      for (var key in json.keys) capitalizeFirst(key): json[key],
+    };
     return Appointment(
-      id: json['Id'],
-      scheduledDate: DateTime.parse(json['ScheduledDate']),
-      scheduledTime: json['ScheduledTime'],
-      durationMinutes: json['DurationMinutes'],
-      status: json['Status'],
-      bookingDate: DateTime.parse(json['BookingDate']),
-      notes: json['Notes'] ?? '',
-      doctor: Doctor.fromAppointmentApi(json['Doctor']),
-      facility: Facility.fromAppointmentApi(json['Facility']),
-      patient: Patient.fromAppointmentJson(json['Patient']),
+      id: normalized['Id'],
+      scheduledDate: DateTime.parse(normalized['ScheduledDate']),
+      scheduledTime: normalized['ScheduledTime'],
+      durationMinutes: normalized['DurationMinutes'],
+      status: normalized['Status'],
+      bookingDate: DateTime.parse(normalized['BookingDate']),
+      notes: normalized['Notes'] ?? '',
+      doctor: Doctor.fromAppointmentApi(normalized['Doctor']),
+      facility: Facility.fromAppointmentApi(normalized['Facility']),
+      patient: Patient.fromAppointmentJson(normalized['Patient']),
     );
   }
 }
-
-

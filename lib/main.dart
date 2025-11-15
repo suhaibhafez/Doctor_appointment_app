@@ -1,11 +1,12 @@
 import 'package:doctor_appointment_app/l10n/app_localizations.dart';
+import 'package:doctor_appointment_app/view/pages/splash_screen.dart';
 
 import 'package:doctor_appointment_app/view_model/settings.dart';
 
 import 'package:doctor_appointment_app/services/local_storage_services.dart';
 import 'package:doctor_appointment_app/routes/routes.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
-import 'package:doctor_appointment_app/view/components/Common/loading.dart';
+ 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -73,14 +74,12 @@ class MyApp extends ConsumerWidget {
           data: (_) {
             return child!;
           },
-          loading: () => const Scaffold(
-            body: Center(child: Loading()),
-          ),
+          loading: () => const SplashScreen(),
           error: (err, _) => Scaffold(
             body: Center(child: Text('Error loading settings: $err')),
           ),
         );
       },
-    );
+    ); 
   }
 }

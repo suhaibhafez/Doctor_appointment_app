@@ -57,7 +57,7 @@ class MedicalRecordCard extends StatelessWidget {
     final textTheme = theme.textTheme;
     final isDark = theme.brightness == Brightness.dark;
 
-    Color accent = isDark ? Config.accentColor : Config.primaryColor;
+    Color accent = Config.primaryColor;
     Color surface = theme.cardTheme.color ?? Colors.white;
     Color labelColor = isDark ? Colors.white70 : Colors.black87;
 
@@ -238,6 +238,7 @@ class MedicalRecordCard extends StatelessWidget {
                 title,
                 style: theme.textTheme.labelLarge?.copyWith(
                   fontWeight: FontWeight.bold,
+                  color: Config.primaryColor,
                 ),
               ),
             ],

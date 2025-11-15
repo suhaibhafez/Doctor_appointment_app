@@ -62,6 +62,7 @@ class AppointmentServices {
       '/patients/me/appointments',
       queryParameters: {
         'StartDate': dateToday,
+        'EndDate': dateToday,
         'pageSize': 10,
       },
       options: Options(
@@ -74,4 +75,34 @@ class AppointmentServices {
         .map((e) => Appointment.fromJson(e))
         .toList();
   }
+
+  
+  static Future<Appointment> bookAppointment(
+    Ref ref,
+    String token,
+    String doctorId,
+    String facilityId,
+    String schduleDate,
+    String schduleTime,
+    int durationMinutes,
+  ) async {
+    final dio = ref.read(dioProvider);
+    final response = await dio.post(
+      '/appointments',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+      data: {
+        "doctorId": doctorId,
+        "facilityId": facilityId,
+        "scheduledDate": schduleDate,
+        "scheduledTime": schduleTime,
+        "durationMinutes": durationMinutes,
+      },
+    );
+    return Appointment.fromJson(response.data['data']);
+  }
+
 }
