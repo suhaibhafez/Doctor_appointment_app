@@ -135,13 +135,13 @@ class FacilitySearchState extends ConsumerState<FacilitySearch> {
                     ),
                   );
                 },
-                menuChildren: facilitiestypeList.asMap().entries.map((e) {
+                menuChildren: facilitiestypeList.map((e) {
                   return MenuItemButton(
                     onPressed: () async {
-                      _typeController.text = e.value['category'];
+                      _typeController.text = e['category'];
 
                       await notifier.updateType(
-                        e.key,
+                        e['key'],
                       );
                     },
                     child: Padding(
@@ -152,10 +152,10 @@ class FacilitySearchState extends ConsumerState<FacilitySearch> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Icon(
-                            e.value['icon'],
+                            e['icon'],
                             color: Config.primaryColor,
                           ),
-                          Text(e.value['category']),
+                          Text(e['category']),
                         ],
                       ),
                     ),
@@ -260,7 +260,7 @@ class FacilitySearchState extends ConsumerState<FacilitySearch> {
               error: (err, _) => Center(
                 child: ErrorPopUp(
                   title: 'Something went wrong',
-                  content: '',
+                  content: err.toString(),
                   buttonText: 'Retry',
                   onOk: () async {
                     _typeController.clear();

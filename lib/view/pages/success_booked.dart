@@ -1,7 +1,9 @@
+import 'package:doctor_appointment_app/routes/routes.dart';
 import 'package:doctor_appointment_app/view/components/Common/button.dart';
 import 'package:doctor_appointment_app/l10n/app_localizations.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
 class AppointmentBooked extends StatelessWidget {
@@ -52,10 +54,11 @@ class AppointmentBooked extends StatelessWidget {
                 vertical: 15,
               ),
               child: Button(
+                height: 48,
                 width: double.infinity,
                 title: AppLocalizations.of(context)!.backToHomePage,
                 disabled: false,
-                onPressed: () => Navigator.of(context).pushNamed('main'),
+                onPressed: ()async => Get.offAllNamed(Sroutes.main),
               ),
             ),
           ],

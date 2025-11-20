@@ -30,9 +30,7 @@ class DoctorSearchState extends ConsumerState<DoctorSearch> {
     super.initState();
     _menuController = MenuController();
     _specializationController = TextEditingController(); // init empty
-    _searchController = TextEditingController(
-      text: ref.read(doctorProvider(null).notifier).q ?? '',
-    );
+    _searchController = TextEditingController();
   }
 
   @override
@@ -175,7 +173,6 @@ class DoctorSearchState extends ConsumerState<DoctorSearch> {
                     ),
                   );
                 }).toList(),
-              
               ),
             ),
           ],
@@ -273,7 +270,7 @@ class DoctorSearchState extends ConsumerState<DoctorSearch> {
               error: (err, _) => Center(
                 child: ErrorPopUp(
                   title: 'Something went wrong',
-                  content: '',
+                  content: err.toString(),
                   buttonText: 'Retry',
                   onOk: () async {
                     _specializationController.clear();

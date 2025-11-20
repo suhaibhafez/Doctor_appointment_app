@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:doctor_appointment_app/models/Appointment/appointment.dart';
 import 'package:doctor_appointment_app/models/Appointment/appointment_details.dart';
+import 'package:doctor_appointment_app/models/Appointment/review.dart';
 import 'package:doctor_appointment_app/view_model/dio.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,7 +57,6 @@ class AppointmentServices {
   }) async {
     final dio = ref.read(dioProvider);
     final dateToday = DateTime.now().toIso8601String().split('T').first;
-   
 
     final response = await dio.get(
       '/patients/me/appointments',
@@ -76,7 +76,6 @@ class AppointmentServices {
         .toList();
   }
 
-  
   static Future<Appointment> bookAppointment(
     Ref ref,
     String token,
@@ -105,4 +104,21 @@ class AppointmentServices {
     return Appointment.fromJson(response.data['data']);
   }
 
+  static Future<Review> getReview({
+    required Ref ref,
+    required String id,
+    required String token,
+  }) async {
+    final response = await ref
+        .read(dioProvider)
+        .get(
+          '/patients/me/appointments/$id/reviews',
+          options: Options(
+            headers: {
+              'Authorization': 'Bearer $token',
+            },
+          ),
+        );
+    return Review.fromJson(response.data['data']);
+  }
 }

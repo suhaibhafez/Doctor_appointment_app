@@ -18,8 +18,8 @@ class FacilityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final iconName = getFacilityTypesList(context).asMap().entries.firstWhere(
-      (element) => element.key == facility.type,
+    final iconName = getFacilityTypesList(context).firstWhere(
+      (element) => element['key'] == facility.type,
     );
 
     return LayoutBuilder(
@@ -64,12 +64,27 @@ class FacilityCard extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: Config.primaryColor, width: 2),
                       color: Config.accentColor.withOpacity(0.1),
+                      image:
+                          facility.avatar != null && facility.avatar!.isNotEmpty
+                          ? DecorationImage(
+                              image: NetworkImage(
+                                Config.getImageUrlForID(facility.avatar!),
+                                headers: const {
+                                  'ngrok-skip-browser-warning': '1',
+                                },
+                              ),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
                     ),
-                    child: Icon(
-                      iconName.value['icon'],
-                      size: isSmall ? 28 : 40,
-                      color: Config.primaryColor,
-                    ),
+
+                    child: facility.avatar == null || facility.avatar!.isEmpty
+                        ? Icon(
+                            iconName['icon'],
+                            size: isSmall ? 28 : 40,
+                            color: Config.primaryColor,
+                          )
+                        : null,
                   ),
 
                   // Facility info
@@ -99,7 +114,7 @@ class FacilityCard extends StatelessWidget {
 
                           // Category
                           Text(
-                            iconName.value['category'],
+                            iconName['category'],
                             style: theme.textTheme.bodyMedium!.copyWith(
                               fontSize: isSmall ? 13 : 14,
                               color: isDark ? Colors.white70 : Colors.black54,

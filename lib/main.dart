@@ -6,7 +6,7 @@ import 'package:doctor_appointment_app/view_model/settings.dart';
 import 'package:doctor_appointment_app/services/local_storage_services.dart';
 import 'package:doctor_appointment_app/routes/routes.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
- 
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -23,8 +23,8 @@ void main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   runApp(
-     ProviderScope(
-      child:const MyApp(),
+    ProviderScope(
+      child: const MyApp(),
       retry: (retryCount, error) => null,
     ),
   );
@@ -48,9 +48,9 @@ class MyApp extends ConsumerWidget {
       darkTheme: Config.darkTheme,
       locale: settingsAsync.maybeWhen(
         data: (data) => Locale(data['lang']),
-        orElse: () => const Locale('ar'),
+        orElse: () => const Locale('en'),
       ),
-      fallbackLocale: const Locale('ar'),
+      fallbackLocale: const Locale('en'),
       supportedLocales: const [
         Locale('en'),
         Locale('ar'),
@@ -80,6 +80,6 @@ class MyApp extends ConsumerWidget {
           ),
         );
       },
-    ); 
+    );
   }
 }

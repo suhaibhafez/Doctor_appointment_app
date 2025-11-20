@@ -16,7 +16,7 @@ import 'package:get/get.dart';
 class FacilitiesByTypePage extends ConsumerWidget {
   FacilitiesByTypePage({super.key});
 
-  final int typeIndex = Get.arguments as int;
+  final String typeIndex = Get.arguments as String;
 
   @override
   Widget build(
@@ -31,7 +31,7 @@ class FacilitiesByTypePage extends ConsumerWidget {
     );
     return Scaffold(
       appBar: CustomAppbar(
-        appTitle: getFacilityTypesList(context)[typeIndex]['category'],
+        appTitle: getFacilityTypesList(context).firstWhere((element) => element['key']==typeIndex,)['category'],
         icon:const  FaIcon(Icons.arrow_back_ios),
       ),
       body: SafeArea(

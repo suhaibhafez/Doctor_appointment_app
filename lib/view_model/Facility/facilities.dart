@@ -2,12 +2,11 @@ import 'dart:async';
 
 import 'package:doctor_appointment_app/models/Facility/facility.dart';
 import 'package:doctor_appointment_app/services/facility_services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class FacilitiesNotifier extends AsyncNotifier<List<Facility>> {
   String? q;
-  int? type;
+  String? type;
 
   int _currentPage = 1;
   final int pageSize = 6;
@@ -51,7 +50,7 @@ class FacilitiesNotifier extends AsyncNotifier<List<Facility>> {
   }
 
   Future<void> loadMore() async {
-    debugPrint('Load more called');
+
     if (isLoadingMore || isLastPage) return;
     isLoadingMore = true;
      loadMoreError = null;
@@ -81,7 +80,7 @@ class FacilitiesNotifier extends AsyncNotifier<List<Facility>> {
     await refresh();
   }
 
-  Future<void> updateType(int? newType) async {
+  Future<void> updateType(String? newType) async {
     type = newType;
     await refresh();
   }
@@ -94,6 +93,6 @@ class FacilitiesNotifier extends AsyncNotifier<List<Facility>> {
 }
 
 final facilitiesProvider =
-    AsyncNotifierProvider.autoDispose.family<FacilitiesNotifier, List<Facility>,int?>(
+    AsyncNotifierProvider.autoDispose.family<FacilitiesNotifier, List<Facility>,String?>(
     (arg) => FacilitiesNotifier(arg),
     );

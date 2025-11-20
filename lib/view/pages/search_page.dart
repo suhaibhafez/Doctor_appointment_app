@@ -4,9 +4,6 @@ import 'package:doctor_appointment_app/l10n/app_localizations.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
 import 'package:flutter/material.dart';
 
-
-
-
 // import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 Widget buildCustomTab(
   BuildContext context,
@@ -76,12 +73,11 @@ class _SearchPage extends State<SearchPage>
     super.dispose();
   }
 
- 
   @override
   Widget build(BuildContext context) {
     Config().init(context);
     return GestureDetector(
-        onTap: () {
+      onTap: () {
         FocusScope.of(context).unfocus();
       },
       behavior: HitTestBehavior.translucent,
@@ -90,13 +86,6 @@ class _SearchPage extends State<SearchPage>
           padding: const EdgeInsets.only(top: 20),
           child: Column(
             children: [
-              Text(
-                AppLocalizations.of(context)!.search,
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
               Config.spaceSmall,
               TabBar(
                 onTap: (value) {
@@ -107,13 +96,13 @@ class _SearchPage extends State<SearchPage>
                     );
                   });
                 },
-      
+
                 controller: _tabController,
                 // unselectedLabelColor: Colors.black,
                 // labelColor: Colors.black,
                 dividerColor: Colors.transparent,
                 indicatorColor: Colors.transparent,
-      
+
                 overlayColor: const WidgetStatePropertyAll(Colors.transparent),
                 tabs: [
                   buildCustomTab(
@@ -131,7 +120,7 @@ class _SearchPage extends State<SearchPage>
                 ],
               ),
               Config.spaceMedium,
-      
+
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -149,5 +138,3 @@ class _SearchPage extends State<SearchPage>
     );
   }
 }
-
-

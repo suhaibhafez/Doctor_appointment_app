@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 
-
-
 class ErrorPopUp extends StatelessWidget {
   final String title;
   final String content;
   final String buttonText;
   final VoidCallback? onOk;
-
+  final bool? cantGetBack;
   const ErrorPopUp({
     super.key,
     required this.title,
     required this.content,
     this.buttonText = 'OK',
     this.onOk,
+    this.cantGetBack
   });
 
   @override
@@ -71,16 +70,24 @@ class ErrorPopUp extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              Text(
-                content,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isDark
-                      ? Colors.white70
-                      : Colors.black.withOpacity(0.75),
-                  height: 1.5,
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxHeight: 100, // You can adjust this
+                ),
+                child: SingleChildScrollView(
+                  child: Text(
+                    content,
+
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: isDark
+                          ? Colors.white70
+                          : Colors.black.withOpacity(0.75),
+                      height: 1.5,
+                    ),
+                  ),
                 ),
               ),
+
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
@@ -94,10 +101,9 @@ class ErrorPopUp extends StatelessWidget {
                     ),
                     elevation: 3,
                   ),
-                  onPressed: () async{
-                    if (Get.isDialogOpen!) {
-                    Get.back();
-                      
+                  onPressed: () async {
+                    if (Get.isDialogOpen!&&(cantGetBack==null||cantGetBack==false)) {
+                      Get.back();
                     }
                     if (onOk != null) onOk!();
                   },

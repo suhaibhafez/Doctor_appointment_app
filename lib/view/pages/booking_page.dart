@@ -2,19 +2,25 @@
 import 'package:doctor_appointment_app/models/Doctor/doctor_capacity.dart';
 import 'package:doctor_appointment_app/models/Doctor/doctor_exception_schedule.dart';
 import 'package:doctor_appointment_app/models/Doctor/doctor_schedule.dart';
+import 'package:doctor_appointment_app/routes/routes.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
 import 'package:doctor_appointment_app/view/components/Common/button.dart';
 import 'package:doctor_appointment_app/view/components/Common/custom_appbar.dart';
+import 'package:doctor_appointment_app/view/components/Common/error_pop_up.dart';
+import 'package:doctor_appointment_app/view/components/Common/loading.dart';
+
 import 'package:doctor_appointment_app/view_model/Appointment/appointments.dart';
 import 'package:doctor_appointment_app/view_model/Doctor/doctor_capacity.dart';
 import 'package:doctor_appointment_app/view_model/Doctor/doctor_schedule.dart';
 import 'package:doctor_appointment_app/view_model/Doctor/doctor_schedule_exception.dart';
+import 'package:doctor_appointment_app/view_model/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/route_manager.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart'; // optional but nice; if not available use manual formatting
+
 // Make sure intl is in pubspec or remove DateFormat usage and use manual formatting below.
 class BookingPage extends ConsumerStatefulWidget {
   const BookingPage({super.key});
@@ -23,15 +29,14 @@ class BookingPage extends ConsumerStatefulWidget {
   ConsumerState<BookingPage> createState() => _BookingPageState();
 }
 
-
 class _BookingPageState extends ConsumerState<BookingPage> {
   CalendarFormat _format = CalendarFormat.month;
-  DateTime _focusDay = DateTime.now();
-  DateTime _currentDay = DateTime.now();
- 
+  DateTime _focusDay = DateTime.now().add(const Duration(days: 1));
+  DateTime _currentDay = DateTime.now().add(const Duration(days: 1));
+
   late bool _dateSelected;
   bool _timeSelected = false;
-
+  bool _isBooking = false;
   // List of generated available slots for the selected date (DateTime objects)
   List<DateTime> _availableSlots = [];
 
@@ -64,177 +69,166 @@ class _BookingPageState extends ConsumerState<BookingPage> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(12.0),
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    _tableCalendar(),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 25,
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Select Consultion Time',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
+          child: Column(
+            children: [
+              Expanded(
+                child: CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          _tableCalendar(),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 25,
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Select Consultation Time',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color:
+                                      Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Config.textLight
+                                      : Config.textDark,
+                                ),
+                              ),
+                            ),
                           ),
+                        ],
+                      ),
+                    ),
+
+                    // Loading/error handling for providers and compute slots
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                        child: Builder(
+                          builder: (context) {
+                            // If any provider is loading, show loader
+                            if (scheduleAsync is AsyncLoading ||
+                                exceptionAsync is AsyncLoading ||
+                                capacityAsync is AsyncLoading) {
+                              return const SizedBox(
+                                height: 180,
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+                            }
+
+                            // If any provider has error
+                            if (scheduleAsync.hasError) {
+                              return const SizedBox(
+                                height: 180,
+                                child: Center(
+                                  child: Text(
+                                    'Failed to load schedule. Please try again.',
+                                    style: TextStyle(color: Config.errorColor),
+                                  ),
+                                ),
+                              );
+                            }
+
+                            if (exceptionAsync.hasError) {
+                              return const SizedBox(
+                                height: 180,
+                                child: Center(
+                                  child: Text(
+                                    'Failed to load exceptions. Please try again.',
+                                    style: TextStyle(color: Config.errorColor),
+                                  ),
+                                ),
+                              );
+                            }
+
+                            if (capacityAsync.hasError) {
+                              return SizedBox(
+                                height: 180,
+                                child: Center(
+                                  child: Text(
+                                    capacityAsync.error.toString(),
+                                    style:const TextStyle(color: Config.errorColor),
+                                  ),
+                                ),
+                              );
+                            }
+
+                            // All data available
+                            final List<DoctorSchedule> schedules =
+                                scheduleAsync.value ?? [];
+                            final List<DoctorExceptionSchedule> exceptions =
+                                exceptionAsync.value ?? [];
+                            final capacity = capacityAsync.value;
+
+                            // compute available slots for the currently selected date
+                            _availableSlots = _computeAvailableSlotsForDate(
+                              selectedDate: _currentDay,
+                              schedules: schedules,
+                              exceptions: exceptions,
+                              capacity: capacity,
+                            );
+
+                            // If weekend and no schedule/exception -> mark unavailable
+
+                            // Grid or message
+                            return SizedBox(
+                              height: 180,
+                              child: _buildSlotsGrid(),
+                            );
+                          },
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
+              Button(
+                height: 48,
+                width: double.infinity,
+                title: 'Make Appointment',
+                disabled: !(_timeSelected && _dateSelected) || _isBooking,
+                onPressed: () async {
+                  if (_selectedSlot == null) return;
 
-              // Loading/error handling for providers and compute slots
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                  child: Builder(
-                    builder: (context) {
-                      // If any provider is loading, show loader
-                      if (scheduleAsync is AsyncLoading ||
-                          exceptionAsync is AsyncLoading ||
-                          capacityAsync is AsyncLoading) {
-                        return const SizedBox(
-                          height: 180,
-                          child:  Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      }
+                  // Format date and time to expected API format
+                  final scheduleDate = _formatDateOnly(_selectedSlot!);
+                  final scheduleTime = _formatTimeOnly(_selectedSlot!);
+                  final appointmentsNotifier = ref.read(
+                    appointmentsProvider.notifier,
+                  );
+                  // Call your AsyncNotifier (adjust provider name if different)
+                  await Get.showOverlay(
+                    asyncFunction: () async =>
+                        await appointmentsNotifier.addAppointment(
+                          docId,
+                          facId,
+                          scheduleDate,
+                          scheduleTime,
+                          capacityAsync.value!.sessionDurationMinutes,
+                        ),
 
-                      // If any provider has error
-                      if (scheduleAsync.hasError ||
-                          exceptionAsync.hasError ||
-                          capacityAsync.hasError) {
-                        return const SizedBox(
-                          height: 180,
-                          child: Center(
-                            child: Text(
-                              'Failed to load schedule. Try again.',
-                              style: TextStyle(color: Config.errorColor),
-                            ),
-                          ),
-                        );
-                      }
+                    loadingWidget: const Loading(),
+                  );
+                  final error = appointmentsNotifier.addingAppointmentError;
+                  if (error != null) {
+                    await Get.dialog(
+                      ErrorPopUp(
+                        title: 'Something went wrong',
+                        content: error.toString(),
+                      ),
+                    );
+                  } else {
+                    await Get.toNamed(Sroutes.successBooking);
+                  }
 
-                      // All data available
-                      final List<DoctorSchedule> schedules =
-                          scheduleAsync.value ?? [];
-                      final List<DoctorExceptionSchedule> exceptions =
-                          exceptionAsync.value ?? [];
-                      final capacity = capacityAsync.value;
+                  // success UI
 
-                      // compute available slots for the currently selected date
-                      _availableSlots = _computeAvailableSlotsForDate(
-                        selectedDate: _currentDay,
-                        schedules: schedules,
-                        exceptions: exceptions,
-                        capacity: capacity,
-                      );
-
-                      // If weekend and no schedule/exception -> mark unavailable
-                     
-
-                      // Grid or message
-                      return SizedBox(
-                        height: 180,
-                        child:  _availableSlots.isEmpty
-                            ? const Center(
-                                child: Text(
-                                  'Weekend is not available',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              )
-                            : _buildSlotsGrid(),
-                      );
-                    },
-                  ),
-                ),
-              ),
-
-              SliverToBoxAdapter(
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                  child: Button(
-                    width: double.infinity,
-                    title: 'Make Appointment',
-                    disabled: !(_timeSelected && _dateSelected),
-                    onPressed: () async {
-                      if (_selectedSlot == null) return;
-
-                      // Format date and time to expected API format
-                      final scheduleDate = _formatDateOnly(_selectedSlot!);
-                      final scheduleTime = _formatTimeOnly(_selectedSlot!);
-
-                      // Call your AsyncNotifier (adjust provider name if different)
-                      try {
-                        print('Booking appointment on $scheduleDate at $scheduleTime');
-                        await ref
-                            .read(appointmentsProvider.notifier)
-                            .addAppointment(
-                              docId,
-                              facId,
-                              scheduleDate,
-                              scheduleTime,
-                              ref.read(
-                                doctorCapacityProvider(docId)
-                              ).maybeWhen(
-                                  data: (value) => value.sessionDurationMinutes,
-                                  orElse: () => 30,
-                                ),
-                            );
-
-                        // success UI
-                        if (mounted) {
-                          showDialog(
-                            context: context,
-                            builder: (_) => AlertDialog(
-                              title: const Text('Success'),
-                              content: const Text(
-                                'Appointment booked successfully.',
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                    Navigator.of(context).pop(); // go back
-                                  },
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        // handle error
-                        if (mounted) {
-                          showDialog(
-                            context: context,
-                            builder: (_) => AlertDialog(
-                              title: const Text('Error'),
-                              content: Text('Failed to book appointment: $e'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                      }
-                    },
-                  ),
-                ),
+                  // handle error
+                },
               ),
             ],
           ),
@@ -247,16 +241,21 @@ class _BookingPageState extends ConsumerState<BookingPage> {
   Widget _buildSlotsGrid() {
     final slots = _availableSlots;
     if (slots.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No available slots',
-          style: TextStyle(fontSize: 16, color: Colors.grey),
+          style: TextStyle(
+            fontSize: 16,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Config.textLight.withOpacity(0.7)
+                : Colors.grey,
+          ),
         ),
       );
     }
-
+    debugPrint(slots.length.toString());
     return GridView.builder(
-      physics: const NeverScrollableScrollPhysics(),
+      // physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(5),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 4,
@@ -274,23 +273,43 @@ class _BookingPageState extends ConsumerState<BookingPage> {
             setState(() {
               _selectedSlot = slot;
               _timeSelected = true;
-              
             });
           },
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(
-                color: isSelected ? Colors.white : Colors.black,
+                color: isSelected
+                    ? Colors.white
+                    : Theme.of(context).brightness == Brightness.dark
+                    ? Config.textLight.withOpacity(0.4)
+                    : Colors.black54,
+                width: 1.3,
               ),
-              borderRadius: BorderRadius.circular(15),
-              color: isSelected ? Config.primaryColor : null,
+              borderRadius: BorderRadius.circular(12),
+              color: isSelected
+                  ? Config.primaryColor
+                  : Theme.of(context).brightness == Brightness.dark
+                  ? Config.surfaceDark
+                  : Config.surfaceLight,
+              boxShadow: [
+                if (!isSelected)
+                  const BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 3,
+                    offset: Offset(0, 1),
+                  ),
+              ],
             ),
             alignment: Alignment.center,
             child: Text(
               _formatSlotLabel(slot),
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: isSelected ? Colors.white : null,
+                color: isSelected
+                    ? Colors.white
+                    : Theme.of(context).brightness == Brightness.dark
+                    ? Config.textLight
+                    : Config.textDark,
               ),
             ),
           ),
@@ -303,15 +322,84 @@ class _BookingPageState extends ConsumerState<BookingPage> {
   Widget _tableCalendar() {
     return TableCalendar(
       focusedDay: _focusDay,
-      firstDay: DateTime.now(),
+      firstDay: DateTime.now().add(const Duration(days: 1)),
       lastDay: DateTime(2025, 12, 31),
+      locale: ref
+          .watch(settingsProvider)
+          .maybeWhen(
+            data: (settings) {
+              final lang = settings['lang'];
+              return lang;
+            },
+            orElse: () => 'en',
+          ),
+      startingDayOfWeek: StartingDayOfWeek.saturday,
+
       calendarFormat: _format,
       currentDay: _currentDay,
       rowHeight: 48,
-      calendarStyle: const CalendarStyle(
-        todayDecoration: BoxDecoration(
+      calendarStyle: CalendarStyle(
+        outsideDaysVisible: false,
+        disabledTextStyle: TextStyle(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Config.textLight.withOpacity(0.3)
+              : Colors.grey.withOpacity(0.5),
+        ),
+        todayDecoration: const BoxDecoration(
           color: Config.primaryColor,
           shape: BoxShape.circle,
+        ),
+
+        selectedDecoration: const BoxDecoration(
+          color: Config.accentColor,
+          shape: BoxShape.circle,
+        ),
+
+        defaultTextStyle: TextStyle(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Config.textLight
+              : Config.textDark,
+          fontWeight: FontWeight.bold,
+        ),
+
+        weekendTextStyle: TextStyle(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Config.textLight
+              : Config.textDark,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+
+      headerStyle: const HeaderStyle(
+        formatButtonVisible: false,
+        titleCentered: true,
+        titleTextStyle: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Config.primaryColor,
+        ),
+        leftChevronIcon: Icon(
+          Icons.chevron_left,
+          color: Config.primaryColor,
+        ),
+        rightChevronIcon: Icon(
+          Icons.chevron_right,
+          color: Config.primaryColor,
+        ),
+      ),
+
+      daysOfWeekStyle: DaysOfWeekStyle(
+        weekdayStyle: TextStyle(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Config.textLight
+              : Config.textDark,
+          fontWeight: FontWeight.bold,
+        ),
+        weekendStyle: TextStyle(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Config.textLight
+              : Config.textDark,
+          fontWeight: FontWeight.bold,
         ),
       ),
       availableCalendarFormats: const {
@@ -327,12 +415,10 @@ class _BookingPageState extends ConsumerState<BookingPage> {
           _currentDay = selectedDay;
           _focusDay = focusedDay;
           _dateSelected = true;
-         
 
           // clear previously chosen time
           _selectedSlot = null;
           _timeSelected = false;
-        
         });
       },
     );
@@ -378,7 +464,7 @@ class _BookingPageState extends ConsumerState<BookingPage> {
       return _generateSlotsFromSegments(
         exSegments,
         capacity?.sessionDurationMinutes ?? 30,
-        capacity?.maxPatientsPerday ?? 999,
+        // capacity?.maxPatientsPerday ?? 999,
       );
     }
 
@@ -396,19 +482,21 @@ class _BookingPageState extends ConsumerState<BookingPage> {
 
     // 4) If finalSegments empty => no availability
     if (finalSegments.isEmpty) return [];
-
-    // 5) Generate slots from finalSegments then apply capacity limit and remove already-booked (TODO)
+    debugPrint(finalSegments.length.toString());
+    // 5) Generate slots from finalSegments
     final allSlots = _generateSlotsFromSegments(
       finalSegments,
       capacity?.sessionDurationMinutes ?? 30,
-      capacity?.maxPatientsPerday ?? 999,
     );
 
-    // TODO: If you have a provider that returns existing appointments for doctor/date,
-    // filter out those times here by checking equality (or overlapping) with allSlots.
-    // e.g. finalSlots = allSlots.where((slot) => !bookedTimes.contains(slot)).toList();
+    // NEW RULE: block slots that are less than 24 hours from now
+    final now = DateTime.now();
+    final List<DateTime> futureSlots = allSlots.where((slot) {
+      final diff = slot.difference(now).inHours;
+      return diff >= 24; // must be at least 24 hours ahead
+    }).toList();
 
-    return allSlots;
+    return futureSlots;
   }
 
   // ---------- Helper functions ----------
@@ -426,7 +514,7 @@ class _BookingPageState extends ConsumerState<BookingPage> {
   List<DateTime> _generateSlotsFromSegments(
     List<_TimeSegment> segments,
     int sessionMinutes,
-    int maxPatientsPerDay,
+    // int maxPatientsPerDay,
   ) {
     final List<DateTime> slots = [];
     for (final seg in segments) {
@@ -436,9 +524,9 @@ class _BookingPageState extends ConsumerState<BookingPage> {
       )) {
         slots.add(cursor);
         cursor = cursor.add(Duration(minutes: sessionMinutes));
-        if (slots.length >= maxPatientsPerDay) break;
+        // if (slots.length >= maxPatientsPerDay) break;
       }
-      if (slots.length >= maxPatientsPerDay) break;
+      // if (slots.length >= maxPatientsPerDay) break;
     }
     return slots;
   }

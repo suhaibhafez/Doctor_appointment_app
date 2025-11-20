@@ -1,14 +1,10 @@
 import 'dart:async';
 import 'package:doctor_appointment_app/models/Doctor/doctor.dart';
 import 'package:doctor_appointment_app/services/doctor_services.dart';
-import 'package:flutter/material.dart';
-
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DoctorsNotifier extends AsyncNotifier<List<Doctor>> {
-  
-
   String? q;
   int? specialization;
 
@@ -22,20 +18,22 @@ class DoctorsNotifier extends AsyncNotifier<List<Doctor>> {
   @override
   FutureOr<List<Doctor>> build() async {
     state = const AsyncValue.loading();
-    debugPrint('Building DoctorsNotifier with specialization: $specialization');
+
     final firstPage = await fetchPage(page: _currentPage);
     if (firstPage.length < pageSize) isLastPage = true;
     return firstPage;
   }
 
-  Future<List<Doctor>> fetchPage({required int page}) {
-    return DoctorService.getDoctors(
+  Future<List<Doctor>> fetchPage({required int page}) async {
+    final res = await DoctorService.getDoctors(
       ref,
       page,
       pageSize,
       specialization,
       q,
     );
+    if (!ref.mounted) return <Doctor>[];
+    return res;
   }
 
   Future<void> refresh() async {
@@ -61,17 +59,14 @@ class DoctorsNotifier extends AsyncNotifier<List<Doctor>> {
     try {
       _currentPage++;
       final more = await fetchPage(page: _currentPage);
-   
+
       if (more.length < pageSize) isLastPage = true;
 
       state = state.whenData((existing) => [...existing, ...more]);
     } catch (e, st) {
-     _currentPage--;
+      _currentPage--;
       loadMoreError = AsyncError(e, st);
       ref.notifyListeners();
-
-      
-
     } finally {
       isLoadingMore = false;
     }
@@ -94,6 +89,7 @@ class DoctorsNotifier extends AsyncNotifier<List<Doctor>> {
   }
 }
 
-final doctorProvider = AsyncNotifierProvider.autoDispose.family<DoctorsNotifier, List<Doctor>,int?>(
-  (arg) => DoctorsNotifier(arg),
-);
+final doctorProvider = AsyncNotifierProvider.autoDispose
+    .family<DoctorsNotifier, List<Doctor>, int?>(
+      (arg) => DoctorsNotifier(arg),
+    );

@@ -1,26 +1,25 @@
+import 'package:doctor_appointment_app/models/notification_model.dart';
 import 'package:doctor_appointment_app/routes/routes.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
 import 'package:doctor_appointment_app/utils/enums/specialitiez_facilities.dart';
 import 'package:doctor_appointment_app/view/components/AppointmentsComponents/appointment_card.dart';
+import 'package:doctor_appointment_app/view/components/Common/error_pop_up.dart';
 import 'package:doctor_appointment_app/view/components/Common/shimmer.dart';
 import 'package:doctor_appointment_app/view_model/Appointment/appointments_today.dart';
 
 import 'package:doctor_appointment_app/view_model/Patient/patient.dart';
+import 'package:doctor_appointment_app/view_model/notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class HomePage extends ConsumerStatefulWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  ConsumerState<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends ConsumerState<HomePage> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     Config().init(context);
     final patientAsync = ref.watch(patientNotifier);
 
@@ -28,16 +27,14 @@ class _HomePageState extends ConsumerState<HomePage> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 24,
-              children: [
-                // 🔹 Header Section (Logo + Patient Info)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [patientAsync.when(
+          child: Column(
+            spacing: 20,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  patientAsync.when(
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
                     error: (err, stack) => Center(
@@ -49,90 +46,115 @@ class _HomePageState extends ConsumerState<HomePage> {
                         ),
                       ),
                     ),
-                    data: (patient) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 4,
-                      children: [
-                        Text(
-                          '${patient!.firstName} ${patient.lastName}',
-                          style: Theme.of(context).textTheme.headlineSmall!
-                              .copyWith(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
+                    data: (patient) => Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            spacing: 4,
+                            children: [
+                              Text(
+                                '${patient!.firstName} ${patient.lastName}',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineSmall!
+                                    .copyWith(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
-                        ),
-                        Text(
-                          patient.nationalId,
-                          style: Theme.of(context).textTheme.titleSmall!
-                              .copyWith(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.primary,
+                              Text(
+                                patient.nationalId,
+                                style: Theme.of(context).textTheme.titleSmall!
+                                    .copyWith(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
                               ),
+                            ],
+                          ),
+                          const NotificationBell(),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Image.asset(
+                    'assets/logo.png',
+
+                    width: Config.screenWidth! * 0.15,
+                    height: Config.screenWidth! * 0.15,
+                    fit: BoxFit.contain,
+                  ),
+                ],
+              ),
+
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 24,
+                    children: [
+                      // 🔹 Header Section (Logo + Patient Info)
+                      Text(
+                        'Today\'s Appointments',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      const AppointmentsTodayList(),
+
+                      // 🔹 Specialities Section
+                      Text(
+                        'Explore Specialities',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      SizedBox(
+                        height: Config.screenHeight! * 0.1,
+                        child: const SpecialitiesList(),
+                      ),
+
+                      // 🔹 Facilities Section
+                      Text(
+                        'Nearby Facilities',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      SizedBox(
+                        height: Config.screenHeight! * 0.1,
+                        child: const FacilitiesList(),
+                      ),
+
+                      // 🔹 Top Doctors Section (Placeholder for now)
+                      Text(
+                        'Top Doctors',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      Container(
+                        width: double.infinity,
+                        height: 100,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Theme.of(
+                              context,
+                            ).dividerColor.withOpacity(0.2),
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                      Image.asset(
-                      'assets/logo.png',
-                      width: Config.screenWidth! * 0.10,
-                      height: Config.screenWidth! * 0.10,
-                      fit: BoxFit.contain,
-                    ),
-                  ]
-                ),
-              
-                Text(
-                  'Today\'s Appointments',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                const AppointmentsTodayList(),
-
-                // 🔹 Specialities Section
-                Text(
-                  'Explore Specialities',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                SizedBox(
-                  height: Config.screenHeight! * 0.1,
-                  child: const SpecialitiesList(),
-                ),
-
-                // 🔹 Facilities Section
-                Text(
-                  'Nearby Facilities',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                SizedBox(
-                  height: Config.screenHeight! * 0.1,
-                  child: const FacilitiesList(),
-                ),
-
-                // 🔹 Top Doctors Section (Placeholder for now)
-                Text(
-                  'Top Doctors',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                Container(
-                  width: double.infinity,
-                  height: 100,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Theme.of(context).dividerColor.withOpacity(0.2),
-                    ),
-                  ),
-                  child: Text(
-                    'Coming Soon...',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium!.copyWith(color: Colors.grey),
+                        child: Text(
+                          'Coming Soon...',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium!.copyWith(color: Colors.grey),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -195,7 +217,7 @@ class FacilitiesList extends StatelessWidget {
           onTap: () async {
             await Get.toNamed(
               Sroutes.facilitiesByTypePage,
-              arguments: index,
+              arguments: facilitiy['key'],
             );
           },
         );
@@ -204,35 +226,69 @@ class FacilitiesList extends StatelessWidget {
   }
 }
 
-class AppointmentsTodayList extends ConsumerWidget {
+class AppointmentsTodayList extends ConsumerStatefulWidget {
   const AppointmentsTodayList({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AppointmentsTodayList> createState() =>
+      _AppointmentsTodayListState();
+}
+
+class _AppointmentsTodayListState extends ConsumerState<AppointmentsTodayList> {
+  final PageController _controller = PageController();
+
+  @override
+  Widget build(BuildContext context) {
     Config().init(context);
     final appointmentsToday = ref.watch(appointmentstodayProvider);
+
     return appointmentsToday.when(
       data: (appointments) {
         if (appointments.isEmpty) {
           return const NoAppointmentsCard();
         }
-        return ListView.builder(
-          shrinkWrap: true,
-          scrollDirection: Axis.horizontal,
-          itemCount: appointments.length,
-          itemBuilder: (context, index) {
-            final appointment = appointments[index];
-            return SizedBox(
-              height: Config.screenHeight! * 0.4,
 
-              width: Config.screenWidth! * 0.65,
-              child: AppointmentCard(appointment: appointment),
-            );
-          },
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            /// IMPORTANT FIX:
+            /// Wrap PageView in SizedBox   so height is determined by the CARD,
+            /// not infinite page view.
+            SizedBox(
+              height: Config.screenHeight! * 0.45,
+
+              child: PageView.builder(
+                controller: _controller,
+                physics: const BouncingScrollPhysics(),
+                itemCount: appointments.length,
+                itemBuilder: (context, index) {
+                  return AppointmentCard(
+                    appointment: appointments[index],
+                  );
+                },
+              ),
+            ),
+            if (appointments.length > 1) ...[
+              const SizedBox(height: 12),
+
+              SmoothPageIndicator(
+                controller: _controller,
+                count: appointments.length,
+                effect: ExpandingDotsEffect(
+                  dotHeight: 8,
+                  dotWidth: 8,
+                  expansionFactor: 3,
+                  activeDotColor: Theme.of(context).colorScheme.primary,
+                  dotColor: Colors.grey.shade400,
+                ),
+              ),
+            ],
+          ],
         );
       },
+
       loading: () => const ShimmerAppointmentCard(),
-      error: (error, stack) => Center(child: Text('Error: $error')),
+      error: (error, _) => Center(child: Text("Error: $error")),
     );
   }
 }
@@ -309,7 +365,7 @@ class NoAppointmentsCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      width:double.infinity,
+      width: double.infinity,
 
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -350,5 +406,387 @@ class NoAppointmentsCard extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class NotificationBell extends ConsumerWidget {
+  const NotificationBell({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unreadCount = ref.watch(unreadCountProvider);
+
+    return IconButton(
+      icon: Stack(
+        clipBehavior: Clip.none, // Add this to prevent clipping
+        children: [
+          const Icon(
+            Icons.notifications,
+            color: Config.primaryColor,
+            size: 30,
+          ),
+          unreadCount.maybeWhen(
+            data: (value) => value > 0
+                ? Positioned(
+                    right: -2, // Adjusted for better positioning
+                    top: -2, // Adjusted for better positioning
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(
+                        color: Colors.redAccent, // Fixed the color assignment
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        value > 99 ? '99+' : value.toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+                : const SizedBox.shrink(), // Show nothing when count is 0
+            orElse: () => const SizedBox.shrink(),
+          ),
+        ],
+      ),
+      onPressed: () async {
+        await Get.dialog(
+          
+          const Dialog(
+            
+            backgroundColor: Colors.transparent,
+            insetPadding: EdgeInsets.all(20),
+            child: NotificationPanel(),
+          ),
+          barrierDismissible: false
+        );
+      },
+    );
+  }
+}
+
+class NotificationPanel extends ConsumerWidget {
+  const NotificationPanel({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notificationsAsync = ref.watch(notificationsProvider);
+
+    return Container(
+      width: Config.screenWidth! * 0.9, // 90% of screen width
+      height: Config.screenHeight! * 0.7, // 70% of screen height
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Header - Using your theme colors
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Notifications',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                // Close button
+                IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () {
+                    ref.invalidate(unreadCountProvider);
+                    Get.back();
+                  },
+                  tooltip: 'Close',
+                ),
+              ],
+            ),
+          ),
+
+          // Notifications List
+          Expanded(
+            child: notificationsAsync.when(
+              data: (notifications) {
+                if (notifications.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'No notifications',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                  );
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Mark all as read button - compact version
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: TextButton.icon(
+                        onPressed: () async {
+                          await ref
+                              .read(notificationsProvider.notifier)
+                              .markAllAsRead();
+                        },
+                        icon: Icon(
+                          Icons.done_all,
+                          size: 18,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        label: Text(
+                          'Mark all as read',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Notifications list
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(8),
+                        itemCount: notifications.length,
+                        itemBuilder: (context, index) {
+                          final notification = notifications[index];
+                          return Dismissible(
+                            key: ValueKey(notification.id),
+                            background: Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary,
+                                borderRadius: BorderRadius.circular(
+                                  12,
+                                ), // Matches your card
+                              ),
+                              alignment: Alignment.centerLeft,
+                              padding: const EdgeInsets.only(left: 20),
+                              child: const Icon(
+                                Icons.done_all,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                            ),
+                            secondaryBackground: Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary,
+                                borderRadius: BorderRadius.circular(
+                                  12,
+                                ), // Matches your card
+                              ),
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 20),
+                              child: const Icon(
+                                Icons.done_all,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                            ),
+                            child: _NotificationItem(
+                              notification: notification,
+                            ),
+                            onDismissed: (direction) async => await ref
+                                .read(notificationsProvider.notifier)
+                                .markAsRead(notification.id),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
+              loading: () => Center(
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              error: (error, stack) => Center(
+                child: ErrorPopUp(
+                  title: 'Something went wrong',
+                  content: error.toString(),
+                  onOk: () => ref.invalidate(notificationsProvider),
+                  cantGetBack: true,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NotificationItem extends StatelessWidget {
+  final NotificationModel notification;
+
+  const _NotificationItem({
+    required this.notification,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final notificationColor = _getNotificationColor(context, notification.type);
+
+    return Card(
+      color: notificationColor.withOpacity(0.1),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: notificationColor.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: ListTile(
+        title: Text(
+          notification.title,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: colorScheme.onSurface,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              notification.message,
+              // maxLines: 2,
+              // overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurface.withOpacity(0.7),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              _formatTime(notification.createdAt),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurface.withOpacity(0.5),
+              ),
+            ),
+          ],
+        ),
+
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      ),
+    );
+  }
+
+  Color _getNotificationColor(BuildContext context, String type) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    switch (type.toUpperCase()) {
+      case 'APPOINTMENT_CREATED':
+        return colorScheme.primary; // Blue-teal
+      case 'APPOINTMENT_CONFIRMED':
+        return Colors.green; // Success green
+      case 'APPOINTMENT_CANCELLED':
+        return colorScheme.error; // Red for errors/cancellations
+      case 'APPOINTMENT_COMPLETED':
+        return Colors.teal; // Teal for completed
+      case 'BILLING_CREATED':
+        return Colors.orange; // Orange for billing
+      case 'BILLING_PAID':
+        return Colors.purple; // Purple for paid
+      case 'REMINDER':
+        return Colors.amber; // Amber for reminders
+      case 'SYSTEM':
+        return Colors.blueGrey; // Blue-grey for system
+      default:
+        return colorScheme.primary; // Default primary color
+    }
+  }
+
+  // // Alternative version using only your theme colors:
+  // Color _getNotificationColorAlt(BuildContext context, String type) {
+  //   final colorScheme = Theme.of(context).colorScheme;
+
+  //   switch (type.toUpperCase()) {
+  //     case 'APPOINTMENT_CREATED':
+  //       return colorScheme.primary; // Blue-teal
+  //     case 'APPOINTMENT_CONFIRMED':
+  //       return Config.accentColor; // Mint accent
+  //     case 'APPOINTMENT_CANCELLED':
+  //       return colorScheme.error; // Red
+  //     case 'APPOINTMENT_COMPLETED':
+  //       return Colors.green; // Green
+  //     case 'BILLING_CREATED':
+  //       return Colors.orange; // Orange
+  //     case 'BILLING_PAID':
+  //       return Colors.purple; // Purple
+  //     case 'REMINDER':
+  //       return Colors.amber; // Amber
+  //     case 'SYSTEM':
+  //       return Colors.blueGrey; // Blue-grey
+  //     default:
+  //       return colorScheme.primary;
+  //   }
+  // }
+
+  // // Version using opacity variations of your primary color:
+  // Color _getNotificationColorSimple(BuildContext context, String type) {
+  //   final colorScheme = Theme.of(context).colorScheme;
+
+  //   switch (type.toUpperCase()) {
+  //     case 'APPOINTMENT_CREATED':
+  //       return colorScheme.primary;
+  //     case 'APPOINTMENT_CONFIRMED':
+  //       return Colors.green;
+  //     case 'APPOINTMENT_CANCELLED':
+  //       return colorScheme.error;
+  //     case 'APPOINTMENT_COMPLETED':
+  //       return Config.accentColor;
+  //     case 'BILLING_CREATED':
+  //       return Colors.orange;
+  //     case 'BILLING_PAID':
+  //       return Colors.purple;
+  //     case 'REMINDER':
+  //       return Colors.amber;
+  //     case 'SYSTEM':
+  //       return colorScheme.primary.withOpacity(0.7);
+  //     default:
+  //       return colorScheme.primary;
+  //   }
+  // }
+
+  String _formatTime(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inMinutes < 1) return 'Just now';
+    if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
+    if (difference.inHours < 24) return '${difference.inHours}h ago';
+    if (difference.inDays < 7) return '${difference.inDays}d ago';
+
+    return '${date.day}/${date.month}/${date.year}';
   }
 }

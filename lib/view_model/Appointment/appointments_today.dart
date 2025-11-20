@@ -11,4 +11,4 @@ final appointmentstodayProvider =
         token: token!,
       );
       return appointments;
-    });
+    },retry: (retryCount, error) => const Duration(seconds: 2),);

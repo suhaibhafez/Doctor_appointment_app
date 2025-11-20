@@ -32,8 +32,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
               Row(
                 children: [
                   const CircleAvatar(
-                    //TODO
-                    //replace by doctor image
+                    
                     backgroundImage: AssetImage('assets/doctor_1.jpg'),
                   ),
                   const SizedBox(

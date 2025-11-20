@@ -24,43 +24,53 @@ List<Map<String, dynamic>> getFacilityTypesList(BuildContext context) {
 
   // Keep the order same as enum declaration
   final List<Map<String, dynamic>> facilityData = [
-    {
+   {
       "icon": FontAwesomeIcons.hospital,
       "category": t.facility_Hospital,
+      "key": "Hospital",
     },
     {
       "icon": FontAwesomeIcons.clinicMedical,
       "category": t.facility_Clinic,
+      "key": "Clinic",
     },
     {
       "icon": FontAwesomeIcons.prescriptionBottleMedical,
       "category": t.facility_Pharmacy,
+      "key": "Pharmacy",
     },
     {
       "icon": FontAwesomeIcons.microscope,
       "category": t.facility_Laboratory,
+      "key": "Laboratory",
     },
     {
       "icon": FontAwesomeIcons.xRay,
       "category": t.facility_DiagnosticCenter,
+      "key": "DiagnosticCenter",
     },
     {
       "icon": FontAwesomeIcons.wheelchair,
       "category": t.facility_RehabilitationCenter,
+      "key": "RehabilitationCenter",
     },
     {
       "icon": FontAwesomeIcons.houseUser,
       "category": t.facility_NursingHome,
+      "key": "NursingHome",
     },
     {
       "icon": FontAwesomeIcons.truckMedical,
       "category": t.facility_UrgentCare,
+      "key": "UrgentCare",
     },
     {
       "icon": FontAwesomeIcons.buildingUser,
       "category": t.facility_SpecializedCenter,
+      "key": "SpecializedCenter",
     },
   ];
+  
 
   return List.generate(
     FacilityType.values.length,

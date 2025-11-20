@@ -21,7 +21,14 @@ class DoctorCapacity {
       isActive: json['isActive'],
     );
   }
-
+  factory DoctorCapacity.empty() {
+    return DoctorCapacity(
+      id: '12312',
+      isActive: true,
+      maxPatientsPerday: 8,
+      sessionDurationMinutes: 30,
+    );
+  }
   Map<String, dynamic> toJson() {
     return {
       'doctorId': id,

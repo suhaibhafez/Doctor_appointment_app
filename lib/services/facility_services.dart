@@ -2,9 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:doctor_appointment_app/models/Doctor/doctor.dart';
 import 'package:doctor_appointment_app/models/Facility/department.dart';
 import 'package:doctor_appointment_app/models/Facility/facility.dart';
+import 'package:doctor_appointment_app/models/Facility/facility_upload.dart';
 import 'package:doctor_appointment_app/view_model/dio.dart';
 import 'package:doctor_appointment_app/services/local_storage_services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class FacilityServices {
@@ -15,11 +15,19 @@ class FacilityServices {
   ) async {
     final dio = ref.read(dioProvider);
     final List<String> fields = [
-      'Id,Name,Type,street,city,country,zipCode,GPSLatitude,GPSLongitude',
+      'Id',
+      'Name',
+      'Type',
+      'Address',
+      'Description',
+      'Avatar',
+      'GPSLatitude',
+      'GPSLongitude',
     ];
+
     final respone = await dio.get(
       '/health-care-facilities/$id',
-      queryParameters: {'feilds': fields.join()},
+      queryParameters: {'fields': fields.join(',')},
     );
     return Facility.fromFacilityApi(respone.data['data']);
   }
@@ -28,18 +36,25 @@ class FacilityServices {
     Ref ref,
     int page,
     int pageSize,
-    int? type,
+    String? type,
     String? q,
   ) async {
     final dio = ref.read(dioProvider);
     final List<String> fields = [
-      'Id,Name,Type,street,city,country,zipCode,GPSLatitude,GPSLongitude',
+      'Id',
+      'Name',
+      'Type',
+      'Address',
+      'Description',
+      'Avatar',
+      'GPSLatitude',
+      'GPSLongitude',
     ];
-    debugPrint('Fetching facilities: page=$page, pageSize=$pageSize, type=$type, q=$q');
+
     final response = await dio.get(
       '/health-care-facilities',
       queryParameters: {
-        'feilds': fields.join(),
+        'fields': fields.join(','),
         'page': page,
         'pagesize': pageSize,
         if (type != null) 'Type': type,
@@ -56,35 +71,56 @@ class FacilityServices {
     Ref ref,
     String facilityId,
   ) async {
-
     final dio = ref.read(dioProvider);
     final token = LocalStorageService.getToken;
-    final response =await dio.get('/health-care-facilities/$facilityId/departments',options:  Options(
+    final response = await dio.get(
+      '/health-care-facilities/$facilityId/departments',
+      options: Options(
         headers: {
           'Authorization': 'Bearer $token',
         },
       ),
     );
-     final data = (response.data['data'] as List?) ?? <dynamic>[];
+    final data = (response.data['data'] as List?) ?? <dynamic>[];
     final departments = data.map((e) => Department.fromJson(e)).toList();
-    return departments; 
+    return departments;
   }
+
   static Future<List<Doctor>> getDoctorsInDepartment(
     Ref ref,
     String facilityId,
-    String departmentId
+    String departmentId,
   ) async {
-
     final dio = ref.read(dioProvider);
     final token = LocalStorageService.getToken;
-    final response =await dio.get('/health-care-facilities/$facilityId/departments/$departmentId/doctors',options:  Options(
+    final response = await dio.get(
+      '/health-care-facilities/$facilityId/departments/$departmentId/doctors',
+      options: Options(
         headers: {
           'Authorization': 'Bearer $token',
         },
       ),
     );
-     final data = (response.data['data'] as List?) ?? <dynamic>[];
-    final doctors = data.map((e) => Doctor.fromDoctorApi(e)).toList();
-    return doctors; 
+    final data = (response.data['data'] as List?) ?? <dynamic>[];
+    final doctors = data.map((e) {
+      print(
+        'healt care id :$facilityId depatemnt Id: $departmentId token : $token /-------',
+      );
+      return Doctor.fromDoctorApi(e);
+    }).toList();
+    return doctors;
+  }
+
+  static Future<List<FacilityUpload>> getUploadsForAFacility({
+    required Ref ref,
+    required String facilityId,
+  }) async {
+    final dio = ref.read(dioProvider);
+    final response = await dio.get(
+      '/health-care-facilities/$facilityId/uploads',
+    );
+    final data = (response.data['data'] as List?) ?? <dynamic>[];
+    final uploads = data.map((e) => FacilityUpload.fromJson(e)).toList();
+    return uploads;
   }
 }

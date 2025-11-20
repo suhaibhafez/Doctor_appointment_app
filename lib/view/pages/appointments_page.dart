@@ -1,4 +1,3 @@
-import 'package:doctor_appointment_app/l10n/app_localizations.dart';
 
 import 'package:doctor_appointment_app/view_model/Appointment/appointments.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
@@ -37,13 +36,7 @@ class _AppointmentPageState extends ConsumerState<AppointmentPage> {
         padding: const EdgeInsets.only(top: 20),
         child: Column(
           children: [
-            Text(
-              AppLocalizations.of(context)!.appointments,
-              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
-            ),
+           
             Config.spaceSmall,
             AppointmentFilterChips(
               selectedStatus: _selectedStatus,

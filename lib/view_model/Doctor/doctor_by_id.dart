@@ -7,4 +7,5 @@ final doctorByIdProvider = FutureProvider.family<Doctor, String>(
   (ref, id) async {
     return await DoctorService.getDoctorByID(id, ref);
   },
+  retry: (retryCount, error) => const Duration(seconds: 2),
 );

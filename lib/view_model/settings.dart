@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:doctor_appointment_app/services/local_storage_services.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,7 +22,7 @@ class SettingsNotifier extends AsyncNotifier<Map<String, dynamic>> {
 
     // Load theme & language
     final themeStr = LocalStorageService.getTheme ?? 'system';
-    final langStr = LocalStorageService.getLang ?? 'ar';
+    final langStr = LocalStorageService.getLang ?? 'en';
 
     // Convert theme string to ThemeMode
     ThemeMode themeMode;
@@ -64,7 +65,7 @@ class SettingsNotifier extends AsyncNotifier<Map<String, dynamic>> {
         }
       }
       // Keep current language
-      final currentLang = state.value?['lang'] ?? 'ar';
+      final currentLang = state.value?['lang'] ?? 'en';
 
       // Update state
       state = AsyncValue.data({
@@ -83,8 +84,8 @@ class SettingsNotifier extends AsyncNotifier<Map<String, dynamic>> {
     state = const AsyncValue.loading();
     try {
   
-       
-      String newLang=state.value?['lang']??'ar';
+     
+      String newLang=state.value?['lang']??'en';
       if (await LocalStorageService.setLang(lang)) {
         newLang = lang;
       }

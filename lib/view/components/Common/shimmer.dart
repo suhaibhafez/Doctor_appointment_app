@@ -6,12 +6,14 @@ Color getBaseColor(BuildContext context) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
   return isDark
       ? const Color(0xFF1C2A2D)
-      : const Color.fromARGB(255, 191, 232, 241);
+      : const Color.fromARGB(255, 167, 222, 235);
 }
 
 Color getHighlightColor(BuildContext context) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
-  return isDark ? const Color(0xFF26404A) : const Color(0xFFE6F0F3);
+  return isDark
+      ? const Color.fromARGB(255, 31, 54, 63)
+      : const Color(0xFFE6F0F3);
 }
 
 class ShimmerDoctorCard extends StatelessWidget {

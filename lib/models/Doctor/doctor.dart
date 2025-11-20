@@ -1,3 +1,5 @@
+import 'package:doctor_appointment_app/models/email.dart';
+import 'package:doctor_appointment_app/models/phone.dart';
 import 'package:doctor_appointment_app/utils/enums/specialitiez_facilities.dart';
 
 class Doctor {
@@ -9,33 +11,64 @@ class Doctor {
   final String specialization;
   final int? age;
   final String? licenseNumber;
-
+  final String? avatar;
+  final int? rating;
+  final int? totalRatings;
+  final String? primaryEmail;
+  final String? primaryPhone;
+  final List<Email>? emails;
+  final List<Phone>? numbers;
+  final String? description;
   const Doctor({
     required this.id,
     this.healthCareFacilityId,
     required this.firstName,
     required this.lastName,
     this.gender,
-   required this.specialization,
+    required this.specialization,
     this.age,
     this.licenseNumber,
+    this.avatar,
+    this.rating,
+    this.totalRatings,
+    this.description,
+    this.emails,
+    this.numbers,
+    this.primaryEmail,
+    this.primaryPhone,
   });
 
   /// ------------------------
   /// Factory for main Doctor API
   /// ------------------------
   factory Doctor.fromDoctorApi(Map<String, dynamic> json) {
-     final normalized = {
+    final normalized = {
       for (var key in json.keys) capitalizeFirst(key): json[key],
     };
     return Doctor(
-      id: normalized['Id'] ,
+      id: normalized['Id'],
       healthCareFacilityId: normalized['HealthCareFacilityId'],
-      firstName: normalized['FirstName'] ,
-      lastName: normalized['LastName'] ,
+      firstName: normalized['FirstName'],
+      lastName: normalized['LastName'],
       gender: normalized['Gender'],
       specialization: normalized['Specialization'],
       age: normalized['Age'],
+      avatar: normalized['Avatar'],
+      rating: normalized["AverageRating"],
+      totalRatings: normalized["TotalReviews"],
+      primaryEmail: normalized['PrimaryEmail'],
+      primaryPhone: normalized['PrimaryPhone'],
+      emails: (normalized['Emails'] as List<dynamic>?)
+          ?.map(
+            (e) => Email.fromJson(e),
+          )
+          .toList(),
+      numbers: (normalized['Phones'] as List<dynamic>?)
+          ?.map(
+            (e) => Phone.fromJson(e),
+          )
+          .toList(),
+      description: normalized['Description'],
     );
   }
 
@@ -50,11 +83,10 @@ class Doctor {
     final last = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
     return Doctor(
-      id: json['id'] ,
+      id: json['id'],
       firstName: first,
       lastName: last,
       specialization: json['specialization'],
-      
     );
   }
 
@@ -68,7 +100,7 @@ class Doctor {
     final last = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
     return Doctor(
-      id: json['id'] ,
+      id: json['id'],
       firstName: first,
       lastName: last,
       gender: json['gender'],
@@ -92,4 +124,3 @@ class Doctor {
     'LicenseNumber': licenseNumber,
   };
 }
-

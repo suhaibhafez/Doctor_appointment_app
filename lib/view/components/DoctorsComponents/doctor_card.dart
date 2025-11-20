@@ -8,7 +8,6 @@ import 'package:doctor_appointment_app/view/components/Common/cool_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class DoctorCard extends StatelessWidget {
   final Doctor doctor;
 
@@ -69,9 +68,16 @@ class DoctorCard extends StatelessWidget {
                           color: Config.primaryColor,
                           width: 2,
                         ),
-                        image: const DecorationImage(
+                        image: DecorationImage(
                           image: NetworkImage(
-                            'https://cdn-icons-png.flaticon.com/512/3774/3774299.png',
+                            doctor.avatar == null || doctor.avatar!.isEmpty
+                                ? 'https://cdn-icons-png.flaticon.com/512/3774/3774299.png'
+                                : Config.getImageUrlForID(doctor.avatar!),
+                            headers: {
+                              if (doctor.avatar != null &&
+                                  doctor.avatar!.isNotEmpty)
+                                'ngrok-skip-browser-warning': '1',
+                            },
                           ),
                           fit: BoxFit.cover,
                         ),
@@ -139,37 +145,44 @@ class DoctorCard extends StatelessWidget {
                           const SizedBox(height: 4),
 
                           // Rating
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.star_rounded,
-                                color: Colors.amber.shade600,
-                                size: isSmall ? 16 : 18,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '4.8',
-                                style: theme.textTheme.bodyMedium!.copyWith(
-                                  fontSize: isSmall ? 12 : 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: isDark
-                                      ? Colors.white70
-                                      : Colors.black87,
+                          Visibility(
+                            maintainSize: true,
+                            maintainState: true,
+                            maintainInteractivity: true,
+                            maintainAnimation: true,
+                            visible: doctor.rating != null,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.star_rounded,
+                                  color: Colors.amber.shade600,
+                                  size: isSmall ? 16 : 18,
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '(50)',
-                                style: theme.textTheme.bodyMedium!.copyWith(
-                                  fontSize: isSmall ? 11 : 13,
-                                  color: Colors.grey,
+                                const SizedBox(width: 4),
+                                Text(
+                                  '${doctor.rating}',
+                                  style: theme.textTheme.bodyMedium!.copyWith(
+                                    fontSize: isSmall ? 12 : 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: isDark
+                                        ? Colors.white70
+                                        : Colors.black87,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                              ),
-                            ],
+                                const SizedBox(width: 4),
+                                Text(
+                                  '(${doctor.totalRatings})',
+                                  style: theme.textTheme.bodyMedium!.copyWith(
+                                    fontSize: isSmall ? 11 : 13,
+                                    color: Colors.grey,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),

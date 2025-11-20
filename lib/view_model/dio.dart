@@ -11,7 +11,7 @@ final dioProvider = Provider<Dio>(
             '1', // 👈 this line skips the warning page
         'Accept': 'application/json', // 👈 optional but recommended
       },
-      receiveTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 30),
     ),
   ),
 );

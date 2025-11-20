@@ -11,4 +11,5 @@ final facilityByIdProvider = FutureProvider.family<Facility, String>(
 
     return await FacilityServices.getFacilityByID(ref,id);
   },
+  retry: (retryCount, error) => const Duration(seconds: 2),
 );

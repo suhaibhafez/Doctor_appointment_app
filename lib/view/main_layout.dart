@@ -1,26 +1,115 @@
 import 'package:doctor_appointment_app/l10n/app_localizations.dart';
+import 'package:doctor_appointment_app/services/signal_r_service.dart';
+import 'package:doctor_appointment_app/utils/config.dart';
 import 'package:doctor_appointment_app/view/pages/appointments_page.dart';
 import 'package:doctor_appointment_app/view/pages/home_page.dart';
 import 'package:doctor_appointment_app/view/pages/search_page.dart';
 import 'package:doctor_appointment_app/view/pages/profile_page.dart';
+import 'package:doctor_appointment_app/view_model/Patient/patient.dart';
+import 'package:doctor_appointment_app/view_model/notification.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class MainLayout extends StatefulWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
+
+class MainLayout extends ConsumerStatefulWidget {
   const MainLayout({super.key});
 
   @override
-  State<MainLayout> createState() => _MainLayoutState();
+  ConsumerState<MainLayout> createState() => _MainLayoutState();
 }
 
-class _MainLayoutState extends State<MainLayout> {
+class _MainLayoutState extends ConsumerState<MainLayout> {
   int currentIndex = 0;
+
   final PageController _pageController = PageController();
+  void show({
+    required BuildContext context,
+    required String title,
+    required String message,
+    required DateTime createdAt,
+  }) {
+    Get.snackbar(
+      "",
+      "",
+      titleText: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      messageText: Text(
+        message,
+        style: const TextStyle(
+          fontSize: 14,
+        ),
+      ),
+      backgroundColor: Config.accentColor,
+      borderRadius: 16,
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      snackPosition: SnackPosition.TOP,
+      duration: const Duration(seconds: 3),
+      boxShadows: const [
+        BoxShadow(
+          color: Colors.black26,
+          blurRadius: 6,
+          offset: Offset(0, 3),
+        ),
+      ],
+    );
+  }
+
+  
+  @override
+  void initState() {
+    super.initState();
+    _setupSignalR();
+  }
+
+  void _setupSignalR() {
+    final signalR = ref.read(signalRServiceProvider);
+    final patient = ref.read(patientNotifier).value;
+
+    if (patient == null) {
+      print('No patient - cannot setup SignalR');
+      return;
+    }
+
+    if (signalR.isConnected) {
+      print('SignalR already connected');
+      return;
+    }
+
+    print('Setting up SignalR connection');
+    signalR.onReceiveNotification((notification) {
+      ref.read(notificationsProvider.notifier).addNotification(notification);
+      ref.invalidate(unreadCountProvider);
+      show(
+        context: Get.context!,
+        title: notification.title,
+        message: notification.message,
+        createdAt: notification.createdAt,
+      );
+    });
+
+    signalR.startConnection().then((_) {
+      signalR.joinUserGroup(patient.id);
+    });
+  }
+
+  @override
+  void dispose() {
+    // Only stop if you're sure the app is closing
+    // ref.read(signalRServiceProvider).stopConnection();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-
       body: PageView(
         controller: _pageController,
         onPageChanged: (value) {

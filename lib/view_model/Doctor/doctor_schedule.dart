@@ -10,4 +10,5 @@ final doctorScheduleProvider=FutureProvider.family<List<DoctorSchedule>,String>(
       ref,
       token!,
     );
-} ,);
+    
+} ,retry: (retryCount, error) => const Duration(seconds: 2),);

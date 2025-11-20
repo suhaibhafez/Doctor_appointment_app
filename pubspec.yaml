@@ -58,6 +58,9 @@ dependencies:
   glass: ^2.0.0+2
   flutter_native_splash: ^2.4.7
   flutter_launcher_icons: ^0.14.4
+  smooth_page_indicator: ^1.2.1
+  signalr_netcore: ^1.4.4
+  carousel_slider: ^5.1.1
 
 
 

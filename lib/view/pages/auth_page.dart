@@ -32,43 +32,43 @@ class _AuthPageState extends State<AuthPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const SizedBox(height: 20),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            AppLocalizations.of(context)!.welcome,
-                            style: const TextStyle(
-                              fontSize: 36,
-                              fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.welcome,
+                              style: const TextStyle(
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          Config.spaceSmall,
-                          Text(
-                            _isSignIn
-                                ? AppLocalizations.of(
-                                    context,
-                                  )!.signInToYourAccount
-                                : AppLocalizations.of(
-                                    context,
-                                  )!.signUpDescription,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                            Config.spaceSmall,
+                            Text(
+                              _isSignIn
+                                  ? AppLocalizations.of(
+                                      context,
+                                    )!.signInToYourAccount
+                                  : AppLocalizations.of(
+                                      context,
+                                    )!.signUpDescription,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       Image.asset(
                         "assets/logo.png",
 
-                        width: Config.screenWidth! * 0.15,
-                        height: Config.screenWidth! * 0.15,
+                        width: Config.screenWidth! * 0.17,
+                        height: Config.screenWidth! * 0.17,
                         fit: BoxFit.contain,
                       ),
                     ],

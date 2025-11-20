@@ -14,6 +14,8 @@ class AppointmentsNotifier extends AsyncNotifier<List<Appointment>> {
   bool isLastPage = false;
   bool isLoadingMore = false;
   AsyncError? loadMoreError;
+  AsyncError? addingAppointmentError;
+
   @override
   FutureOr<List<Appointment>> build() async {
     state = const AsyncValue.loading();
@@ -83,11 +85,11 @@ class AppointmentsNotifier extends AsyncNotifier<List<Appointment>> {
     String schduleTime,
     int durationMinutes,
   ) async {
-    state = const AsyncValue.loading();
-    final token = LocalStorageService.getToken;
-    print('everything before booking appointment  $doctorId $facilityId $schduleDate $schduleTime $durationMinutes');
+    addingAppointmentError = null;
 
     try {
+      final token = LocalStorageService.getToken;
+
       final newAppointment = await AppointmentServices.bookAppointment(
         ref,
         token!,
@@ -99,8 +101,8 @@ class AppointmentsNotifier extends AsyncNotifier<List<Appointment>> {
       );
       state = AsyncValue.data([newAppointment, ...state.value ?? []]);
     } catch (e, st) {
-      state = AsyncValue.error(e, st);
-      rethrow;
+      addingAppointmentError = AsyncError(e, st);
+      ref.notifyListeners();
     }
   }
 }

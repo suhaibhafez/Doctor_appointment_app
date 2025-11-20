@@ -4,11 +4,13 @@ import 'package:doctor_appointment_app/models/Patient/patient.dart';
 
 import 'package:doctor_appointment_app/services/local_storage_services.dart';
 import 'package:doctor_appointment_app/services/patient_services.dart';
+import 'package:flutter/rendering.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final patientNotifier = AsyncNotifierProvider<PatientNotifier, Patient?>(
   PatientNotifier.new,
+  retry: (retryCount, error) => const Duration(seconds: 2),
 );
 
 class PatientNotifier extends AsyncNotifier<Patient?> {
@@ -17,15 +19,11 @@ class PatientNotifier extends AsyncNotifier<Patient?> {
     state = const AsyncValue.loading();
 
     final token = LocalStorageService.getToken;
+    debugPrint(token);
     if (token == null) {
       return null; // 👈 User not logged in yet
     }
-    try {
-      return await getPatient(token);
-    } catch (e) {
-      await LocalStorageService.clearToken();
-      return null;
-    }
+     return await getPatient(token);
   }
 
   Future<Patient> getPatient(String token) async {
@@ -78,7 +76,7 @@ class PatientNotifier extends AsyncNotifier<Patient?> {
         password: password,
         email: email,
       );
-      state =const  AsyncValue.data(null);
+      state = const AsyncValue.data(null);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:doctor_appointment_app/models/Appointment/review.dart';
 import 'package:doctor_appointment_app/models/Patient/allergy.dart';
 import 'package:doctor_appointment_app/models/Patient/billing.dart';
 import 'package:doctor_appointment_app/models/Patient/chronic_disease.dart';
@@ -214,4 +215,23 @@ class PatientService {
     return medicalRecords;
   }
 
+  static Future<Review> reviewAnAppointmnet({
+    required String apId,
+    required int rating,
+    String? comment,
+    required WidgetRef ref,
+    required String token,
+  }) async {
+    final dio = ref.read(dioProvider);
+    final response = await dio.post(
+      '/patients/me/appointments/$apId/reviews',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ),
+      data: {"rating": rating, "comment": comment},
+    );
+    return Review.fromJson(response.data['data']);
+  }
 }

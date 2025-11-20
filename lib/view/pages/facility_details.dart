@@ -1,7 +1,11 @@
+
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:doctor_appointment_app/l10n/app_localizations.dart';
 import 'package:doctor_appointment_app/models/Facility/facility.dart';
+import 'package:doctor_appointment_app/view/pages/home_page.dart';
 import 'package:doctor_appointment_app/view_model/Facility/departments.dart';
 import 'package:doctor_appointment_app/view_model/Facility/doctors_in_department.dart';
+import 'package:doctor_appointment_app/view_model/Facility/facilities_upload.dart';
 import 'package:doctor_appointment_app/view_model/Facility/facility_by_id.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
 
@@ -16,6 +20,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/route_manager.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class FacilityDetails extends ConsumerWidget {
   FacilityDetails({super.key}) : facilityId = Get.parameters['id'] ?? '';
@@ -64,6 +69,9 @@ class FacilityDetails extends ConsumerWidget {
                         // ),
                         _AboutFacilityAndMap(facility: data),
                         Config.spaceMedium,
+                        FacilityUploads(facilityId: facilityId),
+                        Config.spaceMedium,
+
                         _DepartmentsPart(facilityId: data.id),
                       ],
                     ),
@@ -248,6 +256,222 @@ class _AboutFacilityAndMap extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class FacilityUploads extends ConsumerStatefulWidget {
+  const FacilityUploads({super.key, required this.facilityId});
+  final String facilityId;
+  @override
+  ConsumerState<FacilityUploads> createState() => _FacilityUploadsState();
+}
+
+class _FacilityUploadsState extends ConsumerState<FacilityUploads> {
+  int _currentPage = 0;
+  final CarouselSliderController _carouselController =
+      CarouselSliderController();
+
+  @override
+  Widget build(BuildContext context) {
+    Config().init(context);
+    final uploads = ref.watch(facilitiesUploadProvider(widget.facilityId));
+
+    return uploads.when(
+      data: (upload) {
+        if (upload.isEmpty) {
+          return const NoAppointmentsCard();
+        }
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            /// IMPORTANT FIX:
+            /// Wrap PageView in SizedBox   so height is determined by the CARD,
+            /// not infinite page view.
+            CarouselSlider.builder(
+              carouselController: _carouselController,
+              options: CarouselOptions(
+                height: Config.screenHeight! * 0.42,
+                enlargeCenterPage: true,
+                autoPlay: true,
+                autoPlayInterval: const Duration(seconds: 3),
+                autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                pauseAutoPlayOnTouch: true, // ✅ pauses on tap/hold
+                viewportFraction: 1.0,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+              ),
+
+              itemCount: upload.length,
+              itemBuilder: (context, index, realIndex) {
+                final item = upload[index];
+
+                return GestureDetector(
+                  onTap: () async {
+                    await Get.dialog(
+                      Dialog(
+                        backgroundColor: Colors.transparent,
+                        insetPadding: const EdgeInsets.all(12),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Stack(
+                            children: [
+                              /// FULLSCREEN IMAGE
+                              Positioned.fill(
+                                child: Image.network(
+                                  item.getUploadUrl(),
+                                  headers: const {
+                                    'ngrok-skip-browser-warning': '1',
+                                  },
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+
+                              /// DESCRIPTION AT BOTTOM
+                              Positioned(
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.all(14),
+                                  color: Colors.black.withOpacity(0.55),
+                                  child: Text(
+                                    item.description,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              /// TAP TO CLOSE LABEL (optional)
+                              Positioned(
+                                top: 12,
+                                right: 12,
+                                child: IconButton(
+                                  onPressed: () async => Get.back(),
+                                  icon: Icon(
+                                    Icons.close_rounded,
+                                    size: 28,
+                                    color: Colors.white.withOpacity(0.9),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      barrierColor: Colors.black.withOpacity(0.7),
+                    );
+                  },
+
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: Stack(
+                        children: [
+                          /// IMAGE
+                          Positioned.fill(
+                            child: Image.network(
+                              item.getUploadUrl(),
+                              headers: const {
+                                'ngrok-skip-browser-warning': '1',
+                              },
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+
+                          /// GRADIENT FOR DESCRIPTION
+                          Positioned.fill(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.transparent,
+                                    Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.black.withOpacity(0.65)
+                                        : Colors.black.withOpacity(0.45),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          /// DESCRIPTION TEXT
+                          Positioned(
+                            left: 16,
+                            right: 16,
+                            bottom: 14,
+                            child: Text(
+                              item.description,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyLarge!
+                                  .copyWith(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    shadows: const [
+                                      Shadow(
+                                        color: Colors.black54,
+                                        offset: Offset(0, 1),
+                                        blurRadius: 4,
+                                      ),
+                                    ],
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 12),
+
+            AnimatedSmoothIndicator(
+              activeIndex: _currentPage,
+              count: upload.length,
+              effect: ExpandingDotsEffect(
+                dotHeight: 8,
+                dotWidth: 8,
+                expansionFactor: 3,
+                activeDotColor: Theme.of(context).colorScheme.primary,
+                dotColor: Colors.grey.shade400,
+              ),
+              onDotClicked: (index) {
+                _carouselController.animateToPage(index);
+              },
+            ),
+          ],
+        );
+      },
+
+      loading: () => const ShimmerAppointmentCard(),
+      error: (error, _) => Center(child: Text("Error: $error")),
     );
   }
 }

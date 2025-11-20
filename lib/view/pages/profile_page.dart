@@ -67,32 +67,26 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       );
     });
 
-    final theme = Theme.of(context);
+   
     Config().init(context);
 
-    return Scaffold(
-      backgroundColor: theme.colorScheme.background,
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.profile),
-      ),
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            ref.invalidate(patientNotifier);
-            ref.invalidate(chronicDiseaseProvider);
-            ref.invalidate(allergiesProvider);
-            ref.invalidate(settingsProvider);
-          },
-          child: const SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                PatientDetailsSection(),
-                SizedBox(height: 10),
-                SettingsSection(),
-              ],
-            ),
+    return SafeArea(
+      child: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(patientNotifier);
+          ref.invalidate(chronicDiseaseProvider);
+          ref.invalidate(allergiesProvider);
+          ref.invalidate(settingsProvider);
+        },
+        child: const SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              PatientDetailsSection(),
+              SizedBox(height: 10),
+              SettingsSection(),
+            ],
           ),
         ),
       ),

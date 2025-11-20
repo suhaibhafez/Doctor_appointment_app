@@ -1,7 +1,7 @@
 class Facility {
   final String id;
   final String name;
-  final int? type;
+  final String? type;
   final String? street;
   final String? city;
   final String? state;
@@ -10,7 +10,7 @@ class Facility {
   final String? fullAddress;
   final double? gpsLatitude;
   final double? gpsLongitude;
-
+  final String? avatar;
   const Facility({
     required this.id,
     required this.name,
@@ -23,6 +23,7 @@ class Facility {
     this.fullAddress,
     this.gpsLatitude,
     this.gpsLongitude,
+    this.avatar
   });
 
   /// ------------------------
@@ -32,8 +33,8 @@ class Facility {
     final address = json['Address'] ?? {};
 
     return Facility(
-      id: json['Id'] ,
-      name: json['Name'] ,
+      id: json['Id'],
+      name: json['Name'],
       type: json['Type'],
       street: address['street'],
       city: address['city'],
@@ -41,9 +42,10 @@ class Facility {
       zipCode: address['zipCode'],
       fullAddress:
           address['fullAddress'] ??
-          '${address['street'] }, ${address['city'] }, ${address['country'] } ${address['zipCode'] }',
-      gpsLatitude:json['GPSLatitude'],
-      gpsLongitude: json['GPSLongitude']
+          '${address['street']}, ${address['city']}, ${address['country']} ${address['zipCode']}',
+      gpsLatitude: json['GPSLatitude'],
+      gpsLongitude: json['GPSLongitude'],
+      avatar: json['Avatar']
     );
   }
 
@@ -52,8 +54,8 @@ class Facility {
   /// ------------------------
   factory Facility.fromAppointmentApi(Map<String, dynamic> json) {
     return Facility(
-      id: json['id'] ,
-      name: json['name'] ,
+      id: json['id'],
+      name: json['name'],
       fullAddress: json['address'],
     );
   }
@@ -65,9 +67,9 @@ class Facility {
     final address = json['address'] ?? {};
 
     return Facility(
-      id: json['id'] ,
-      name: json['name'] ,
-      type: _parseType(json['type']),
+      id: json['id'],
+      name: json['name'],
+      type: json['type'],
       street: address['street'],
       city: address['city'],
       state: address['state'],
@@ -75,7 +77,7 @@ class Facility {
       zipCode: address['zipCode'],
       fullAddress:
           '${address['street'] ?? ''}, ${address['city'] ?? ''}, ${address['country'] ?? ''} ${address['zipCode'] ?? ''}',
-           gpsLatitude: json['gpsLatitude'],
+      gpsLatitude: json['gpsLatitude'],
       gpsLongitude: json['gpsLongitude'],
     );
   }
@@ -104,10 +106,5 @@ class Facility {
   /// ------------------------
   /// Helper: convert string or int type to int safely
   /// ------------------------
-  static int? _parseType(dynamic value) {
-    if (value == null) return null;
-    if (value is int) return value;
-    if (value is String) return int.tryParse(value);
-    return null;
-  }
+ 
 }

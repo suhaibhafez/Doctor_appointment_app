@@ -21,6 +21,11 @@ class Config {
     return screenHeight;
   }
 
+  static String getImageUrlForID(String id) {
+   
+    return 'https://unlugubriously-balsamy-ward.ngrok-free.dev/$id';
+  }
+
   //define spacing height
   static const spaceSmall = SizedBox(height: 25);
   static final spaceMedium = SizedBox(height: screenHeight! * 0.05);
@@ -28,7 +33,12 @@ class Config {
 
   static const Color primaryColor = Color(0xFF2E7D9E); // Calm teal-blue
   static const Color accentColor = Color(0xFF53C1B0); // Mint accent
-  static const Color backgroundLight = Color.fromARGB(255, 214, 234, 241); // soft cool blue-gray
+  static const Color backgroundLight = Color.fromARGB(
+    255,
+    236,
+    240,
+    241,
+  ); // soft cool blue-gray
   static const Color surfaceLight = Color(0xFFFFFFFF); // pure white surface
 
   static const Color backgroundDark = Color(0xFF0E1A1C); // deep teal-black tone
@@ -173,7 +183,6 @@ class Config {
     ),
 
     inputDecorationTheme: InputDecorationTheme(
-      
       filled: true,
       fillColor: const Color(0xFF252729),
       hintStyle: const TextStyle(color: Colors.white54),
@@ -232,5 +241,4 @@ class Config {
       color: accentColor,
     ),
   );
-
 }
