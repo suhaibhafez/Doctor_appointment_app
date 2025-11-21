@@ -192,17 +192,46 @@ class MedicalRecordCard extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Text(
-                            "Medications: ${p.medicationList}",
-                            style: textTheme.bodyMedium?.copyWith(
-                              color: labelColor,
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "Medications: ",
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: labelColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: p.medicationList,
+                                  style: textTheme.bodyMedium?.copyWith(
+                                    color: labelColor,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            "Dosage: ${p.dosageInstructions}",
-                            style: textTheme.bodySmall?.copyWith(
-                              color: labelColor.withOpacity(0.9),
+                       
+                          const SizedBox(height: 8),
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "Dosage: ",
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: labelColor.withOpacity(0.9),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: p.dosageInstructions,
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: labelColor.withOpacity(0.8),
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],

@@ -23,6 +23,8 @@ class FacilityServices {
       'Avatar',
       'GPSLatitude',
       'GPSLongitude',
+      'Schedules',
+      'ScheduleExceptions',
     ];
 
     final respone = await dio.get(
@@ -103,9 +105,7 @@ class FacilityServices {
     );
     final data = (response.data['data'] as List?) ?? <dynamic>[];
     final doctors = data.map((e) {
-      print(
-        'healt care id :$facilityId depatemnt Id: $departmentId token : $token /-------',
-      );
+    
       return Doctor.fromDoctorApi(e);
     }).toList();
     return doctors;

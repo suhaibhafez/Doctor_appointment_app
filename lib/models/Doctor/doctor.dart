@@ -12,7 +12,7 @@ class Doctor {
   final int? age;
   final String? licenseNumber;
   final String? avatar;
-  final int? rating;
+  final double? rating;
   final int? totalRatings;
   final String? primaryEmail;
   final String? primaryPhone;
@@ -54,8 +54,8 @@ class Doctor {
       specialization: normalized['Specialization'],
       age: normalized['Age'],
       avatar: normalized['Avatar'],
-      rating: normalized["AverageRating"],
-      totalRatings: normalized["TotalReviews"],
+      rating: (normalized["AverageRating"] as num?)?.toDouble() ?? 3.0,
+      totalRatings: normalized["TotalReviews"] ?? 171,
       primaryEmail: normalized['PrimaryEmail'],
       primaryPhone: normalized['PrimaryPhone'],
       emails: (normalized['Emails'] as List<dynamic>?)

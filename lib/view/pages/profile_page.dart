@@ -67,7 +67,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       );
     });
 
-   
     Config().init(context);
 
     return SafeArea(
@@ -144,10 +143,14 @@ class PatientDetailsSection extends ConsumerWidget {
                               ),
                             ],
                           ),
-                          child: const CircleAvatar(
+                          child: CircleAvatar(
                             radius: 55,
-                            foregroundImage: AssetImage('assets/profile1.jpg'),
-                            backgroundColor: Colors.blueGrey,
+                            backgroundColor: Colors.transparent,
+                            child: Icon(
+                              Icons.person_outline,
+                              size: 70,
+                              color: theme.colorScheme.primary.withOpacity(0.7),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 24),
@@ -227,26 +230,32 @@ class PatientDetailsSection extends ConsumerWidget {
                   spacing: 10,
                   children: [
                     Expanded(
-                      child: CoolButton(
-                        isSmall: isSmall,
-                        onclick: () async {
-                          await Get.toNamed(Sroutes.medicalRecordPage);
-                        },
-                        text: "Medical History",
-                        icon: const Icon(Icons.history),
-                        alignment: Alignment.center,
+                      child: SizedBox(
+                        width: 60,
+                        child: CoolButton(
+                          isSmall: isSmall,
+                          onclick: () async {
+                            await Get.toNamed(Sroutes.medicalRecordPage);
+                          },
+                          text: "Medical History",
+                          icon: const Icon(Icons.history, size: 20),
+                        ),
                       ),
                     ),
                     Expanded(
-                      child: CoolButton(
-                        isSmall: isSmall,
-                        onclick: () async {
-                          await Get.toNamed(Sroutes.billingPage);
-                        },
-                        icon: const Icon(
-                          Icons.receipt_long,
+                      child: SizedBox(
+                        width: 60,
+                        child: CoolButton(
+                          isSmall: isSmall,
+                          onclick: () async {
+                            await Get.toNamed(Sroutes.billingPage);
+                          },
+                          icon: const Icon(
+                            Icons.receipt_long,
+                            size: 20,
+                          ),
+                          text: 'Billing',
                         ),
-                        text: 'Billing',
                       ),
                     ),
                   ],

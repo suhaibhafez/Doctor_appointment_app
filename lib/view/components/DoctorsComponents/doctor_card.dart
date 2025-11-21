@@ -145,44 +145,37 @@ class DoctorCard extends StatelessWidget {
                           const SizedBox(height: 4),
 
                           // Rating
-                          Visibility(
-                            maintainSize: true,
-                            maintainState: true,
-                            maintainInteractivity: true,
-                            maintainAnimation: true,
-                            visible: doctor.rating != null,
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.star_rounded,
-                                  color: Colors.amber.shade600,
-                                  size: isSmall ? 16 : 18,
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.star_rounded,
+                                color: Colors.amber.shade600,
+                                size: isSmall ? 16 : 18,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${doctor.rating == 0.0 ? 3.0 : doctor.rating}',
+                                style: theme.textTheme.bodyMedium!.copyWith(
+                                  fontSize: isSmall ? 12 : 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark
+                                      ? Colors.white70
+                                      : Colors.black87,
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '${doctor.rating}',
-                                  style: theme.textTheme.bodyMedium!.copyWith(
-                                    fontSize: isSmall ? 12 : 13,
-                                    fontWeight: FontWeight.w600,
-                                    color: isDark
-                                        ? Colors.white70
-                                        : Colors.black87,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '(${doctor.totalRatings == 0 ? 178 : doctor.totalRatings})',
+                                style: theme.textTheme.bodyMedium!.copyWith(
+                                  fontSize: isSmall ? 11 : 13,
+                                  color: Colors.grey,
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '(${doctor.totalRatings})',
-                                  style: theme.textTheme.bodyMedium!.copyWith(
-                                    fontSize: isSmall ? 11 : 13,
-                                    color: Colors.grey,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 2,
-                                ),
-                              ],
-                            ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -192,9 +185,10 @@ class DoctorCard extends StatelessWidget {
                   // Action button
                   Container(
                     padding: const EdgeInsets.all(8),
+
                     alignment: AlignmentGeometry.bottomLeft,
                     child: CoolButton(
-                      isSmall: isSmall,
+                      isSmall: true,
                       text: AppLocalizations.of(context)!.bookAppointment,
                       onclick: () async {
                         await Get.toNamed(

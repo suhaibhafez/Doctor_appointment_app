@@ -1,5 +1,5 @@
 import 'package:doctor_appointment_app/l10n/app_localizations.dart';
-import 'package:doctor_appointment_app/services/signal_r_service.dart';
+
 import 'package:doctor_appointment_app/utils/config.dart';
 import 'package:doctor_appointment_app/view/pages/appointments_page.dart';
 import 'package:doctor_appointment_app/view/pages/home_page.dart';

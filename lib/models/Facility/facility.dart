@@ -1,3 +1,6 @@
+import 'package:doctor_appointment_app/models/Facility/facility_exception_schedule.dart';
+import 'package:doctor_appointment_app/models/Facility/facility_schedule.dart';
+
 class Facility {
   final String id;
   final String name;
@@ -11,6 +14,9 @@ class Facility {
   final double? gpsLatitude;
   final double? gpsLongitude;
   final String? avatar;
+  final List<FacilitySchedule>? schedules;
+  final List<FacilityExceptionSchedule>? expSchedules;
+
   const Facility({
     required this.id,
     required this.name,
@@ -23,7 +29,9 @@ class Facility {
     this.fullAddress,
     this.gpsLatitude,
     this.gpsLongitude,
-    this.avatar
+    this.avatar,
+    this.schedules,
+    this.expSchedules,
   });
 
   /// ------------------------
@@ -31,6 +39,7 @@ class Facility {
   /// ------------------------
   factory Facility.fromFacilityApi(Map<String, dynamic> json) {
     final address = json['Address'] ?? {};
+   
 
     return Facility(
       id: json['Id'],
@@ -45,7 +54,17 @@ class Facility {
           '${address['street']}, ${address['city']}, ${address['country']} ${address['zipCode']}',
       gpsLatitude: json['GPSLatitude'],
       gpsLongitude: json['GPSLongitude'],
-      avatar: json['Avatar']
+      avatar: json['Avatar'],
+      schedules:
+          (json['Schedules'] as List<dynamic>?)
+              ?.map((p) => FacilitySchedule.fromJson(p))
+              .toList() ??
+          [],
+      expSchedules:
+          (json['ScheduleExceptions'] as List<dynamic>?)
+              ?.map((p) => FacilityExceptionSchedule.fromJson(p))
+              .toList() ??
+          [],
     );
   }
 
@@ -106,5 +125,4 @@ class Facility {
   /// ------------------------
   /// Helper: convert string or int type to int safely
   /// ------------------------
- 
 }

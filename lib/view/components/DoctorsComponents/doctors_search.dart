@@ -282,6 +282,7 @@ class DoctorSearchState extends ConsumerState<DoctorSearch> {
             ),
           ),
         ),
+      
       ],
     );
   }

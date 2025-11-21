@@ -32,66 +32,90 @@ class _AuthPageState extends State<AuthPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  // Improved Header Section
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              AppLocalizations.of(context)!.welcome,
-                              style: const TextStyle(
-                                fontSize: 36,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Config.spaceSmall,
-                            Text(
-                              _isSignIn
-                                  ? AppLocalizations.of(
-                                      context,
-                                    )!.signInToYourAccount
-                                  : AppLocalizations.of(
-                                      context,
-                                    )!.signUpDescription,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
+                      Transform.scale(
+                        scale: 1.1,
+                        child: Image.asset(
+                          "assets/logo.png",
+                          width: Config.screenWidth! * 0.18,
+                          height: Config.screenWidth! * 0.18,
+                          fit: BoxFit.contain,
                         ),
                       ),
-                      Image.asset(
-                        "assets/logo.png",
-
-                        width: Config.screenWidth! * 0.17,
-                        height: Config.screenWidth! * 0.17,
-                        fit: BoxFit.contain,
+                      const SizedBox(width: 12),
+                      Text(
+                        "Shifa",
+                        style: TextStyle(
+                          fontSize: 34,
+                          fontWeight: FontWeight.w700,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Config.textLight
+                              : Config.textDark,
+                          fontFamily: 'Poppins',
+                          letterSpacing: 0.5,
+                        ),
                       ),
                     ],
                   ),
 
-                  Config.spaceSmall,
+                  Config.spaceMedium,
+
+                  // Welcome Text Section
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ShaderMask(
+                        shaderCallback: (bounds) => LinearGradient(
+                          colors: [
+                            Theme.of(context).colorScheme.primary,
+                            Theme.of(context).colorScheme.secondary,
+                          ],
+                        ).createShader(bounds),
+                        child: Text(
+                          AppLocalizations.of(context)!.welcome,
+                          style: const TextStyle(
+                            fontSize: 34,
+                            fontWeight: FontWeight.w700,
+                            height: 1.1,
+                            color:
+                                Colors.white, // Will be overridden by gradient
+                          ),
+                        ),
+                      ),
+                      Config.spaceSmall,
+                      Text(
+                        _isSignIn
+                            ? AppLocalizations.of(context)!.signInToYourAccount
+                            : AppLocalizations.of(context)!.signUpDescription,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.7),
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
 
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    padding: const EdgeInsetsGeometry.all(6),
                     child: _isSignIn ? const LoginForm() : const SignUpForm(),
                   ),
 
-                  Config.spaceSmall,
+                  // Form Section
 
+                  // Toggle Section
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         _isSignIn
                             ? AppLocalizations.of(context)!.dontHaveAccount
-                            : AppLocalizations.of(
-                                context,
-                              )!.alreadyHaveAccount,
+                            : AppLocalizations.of(context)!.alreadyHaveAccount,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.normal,
@@ -108,9 +132,10 @@ class _AuthPageState extends State<AuthPage> {
                           _isSignIn
                               ? AppLocalizations.of(context)!.signUp
                               : AppLocalizations.of(context)!.signIn,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ),

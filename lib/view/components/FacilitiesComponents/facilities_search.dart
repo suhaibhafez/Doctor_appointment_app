@@ -39,7 +39,7 @@ class FacilitySearchState extends ConsumerState<FacilitySearch> {
   void dispose() {
     _typeController.dispose();
     _searchController.dispose();
-      
+
     _debounce?.cancel();
     super.dispose();
   }
@@ -105,7 +105,7 @@ class FacilitySearchState extends ConsumerState<FacilitySearch> {
                     readOnly: true,
                     controller: _typeController,
                     decoration: InputDecoration(
-                      hintText: AppLocalizations.of(context)!.specialization,
+                      hintText: 'Type',
                       suffixIcon: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -118,18 +118,17 @@ class FacilitySearchState extends ConsumerState<FacilitySearch> {
                               },
                               icon: const Icon(Icons.close),
                             ),
-                        if (notifier.type == null)
-
-                          IconButton(
-                            icon: const Icon(Icons.arrow_drop_down),
-                            onPressed: () {
-                              if (_menuController.isOpen) {
-                                _menuController.close();
-                              } else {
-                                _menuController.open();
-                              }
-                            },
-                          ),
+                          if (notifier.type == null)
+                            IconButton(
+                              icon: const Icon(Icons.arrow_drop_down),
+                              onPressed: () {
+                                if (_menuController.isOpen) {
+                                  _menuController.close();
+                                } else {
+                                  _menuController.open();
+                                }
+                              },
+                            ),
                         ],
                       ),
                     ),
@@ -202,8 +201,6 @@ class FacilitySearchState extends ConsumerState<FacilitySearch> {
                                       : 0),
                               itemBuilder: (context, index) {
                                 if (index < facilities.length) {
-                                 
-
                                   return FacilityCard(
                                     facility: facilities[index],
                                   );

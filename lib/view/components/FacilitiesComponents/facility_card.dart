@@ -31,7 +31,7 @@ class FacilityCard extends StatelessWidget {
             await Get.toNamed('${Sroutes.facilityDetails}/${facility.id}');
           },
           child: Container(
-            height: Config.screenHeight! * 0.18,
+            height: Config.screenHeight! * 0.2,
             padding: const EdgeInsets.all(10),
             child: Container(
               decoration: BoxDecoration(

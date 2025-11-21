@@ -73,13 +73,23 @@ class AppointmentCard extends ConsumerWidget {
         ElevatedButton(
           onPressed: () {},
           style: buttonStyle,
-          child: const Text("Reschedule"),
+          child: const Text(
+            "Reschedule",
+          ),
         ),
       ];
     } else if (isCompletedOrCancelled) {
       return [
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () async{
+              await Get.toNamed(
+              Sroutes.bookingPage,
+              parameters: {
+                'docId': appointment.doctor.id,
+                'facId': appointment.facility.id,
+              },
+            );
+          },
           style: buttonStyle,
           child: const Text("Rebook"),
         ),
@@ -168,7 +178,7 @@ class AppointmentCard extends ConsumerWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    "${appointment.facility.name}\n${appointment.facility.fullAddress}",
+                    appointment.facility.name,
                     style: theme.textTheme.bodyMedium,
                   ),
                 ),
@@ -426,6 +436,7 @@ class _RatingFormState extends ConsumerState<_RatingForm> {
             decoration: const InputDecoration(
               labelText: "Comment (optional)",
               alignLabelWithHint: true,
+              labelStyle: TextStyle(color: Colors.grey, fontSize: 12),
             ),
           ),
 

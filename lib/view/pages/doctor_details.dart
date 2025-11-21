@@ -151,10 +151,9 @@ class AboutDoctor extends StatelessWidget {
               border: Border.all(color: Config.primaryColor, width: 2),
               image: DecorationImage(
                 image: NetworkImage(
-                  // doctor.imageUrl ??
-                  doctor.avatar == null || doctor.avatar!.isEmpty
-                      ? 'https://cdn-icons-png.flaticon.com/512/3774/3774299.png'
-                      : Config.getImageUrlForID(doctor.avatar!),
+                  doctor.avatar == null || doctor.avatar!.isEmpty ?
+                  'https://cdn-icons-png.flaticon.com/512/3774/3774299.png'
+                  : Config.getImageUrlForID(doctor.avatar!),
                 ),
                 fit: BoxFit.cover,
               ),
@@ -266,192 +265,189 @@ class DoctorContactSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     Config().init(context);
-    return ExpansionTile(
-      initiallyExpanded: false,
-      iconColor: Config.primaryColor,
-      collapsedIconColor: Config.primaryColor,
-      textColor: Config.primaryColor,
-      collapsedTextColor: theme.textTheme.bodyLarge!.color,
-      expandedCrossAxisAlignment: CrossAxisAlignment.start,
-      tilePadding: const EdgeInsets.all(0),
+    return Theme(
+      data: theme.copyWith(dividerColor: Colors.transparent),
+      child: ExpansionTile(
+        initiallyExpanded: false,
+        iconColor: Config.primaryColor,
+        collapsedIconColor: Config.primaryColor,
+        textColor: Config.primaryColor,
+        collapsedTextColor: theme.textTheme.bodyLarge!.color,
+        expandedCrossAxisAlignment: CrossAxisAlignment.start,
+        tilePadding: const EdgeInsets.all(0),
 
-      title: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        spacing: 6,
-        children: [
-          const Icon(Icons.mail_outline),
-          Text(
-            "Contacts",
-            style: theme.textTheme.headlineSmall!.copyWith(
-              fontWeight: FontWeight.bold,
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          spacing: 6,
+          children: [
+            const Icon(Icons.mail_outline),
+            Text(
+              "Contacts",
+              style: theme.textTheme.headlineSmall!.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
+          ],
+        ),
+        children: [
+          // Title
+
+          // -------------------- EMAILS --------------------
+          if (doctor.emails != null && doctor.emails!.isNotEmpty) ...[
+            const SizedBox(height: 12),
+
+            Text(
+              "Emails",
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            ...doctor.emails!.map((e) {
+              final bool isPrimary = e.isPrimary;
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: isPrimary
+                      ? Config.accentColor.withOpacity(0.15)
+                      : Colors.grey.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isPrimary
+                        ? Config.accentColor
+                        : Colors.grey.shade400,
+                    width: isPrimary ? 1.6 : 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.circle,
+                      color: isPrimary ? Config.accentColor : Colors.grey,
+                      size: 10,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            e.label,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: isPrimary
+                                  ? Config.primaryColor
+                                  : Colors.grey,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            e.email,
+                            style: const TextStyle(fontSize: 15),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                        elevation: 2,
+                      ),
+                      onPressed: () async => await launchEmail(e.email),
+                      icon: const Icon(Icons.email_outlined, size: 16),
+                      label: const Text(
+                        "Send",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
+
+          // -------------------- PHONE NUMBERS --------------------
+          if (doctor.numbers != null && doctor.numbers!.isNotEmpty) ...[
+            const SizedBox(height: 16),
+
+            Text(
+              "Phone Numbers",
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            ...doctor.numbers!.map((p) {
+              final bool isPrimary = p.isPrimary;
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: isPrimary
+                      ? Config.accentColor.withOpacity(0.15)
+                      : Colors.grey.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isPrimary
+                        ? Config.accentColor
+                        : Colors.grey.shade400,
+                    width: isPrimary ? 1.6 : 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.circle,
+                      color: isPrimary ? Config.accentColor : Colors.grey,
+                      size: 10,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            p.label,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: isPrimary
+                                  ? Config.primaryColor
+                                  : Colors.grey,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            p.email,
+                            style: const TextStyle(fontSize: 15),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ],
         ],
       ),
-      children: [
-        // Title
-
-        // -------------------- EMAILS --------------------
-        if (doctor.emails != null && doctor.emails!.isNotEmpty) ...[
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              const Icon(Icons.email, color: Config.primaryColor),
-              const SizedBox(width: 8),
-              Text(
-                "Emails",
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-
-          ...doctor.emails!.map((e) {
-            final bool isPrimary = e.isPrimary;
-
-            return Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: isPrimary
-                    ? Config.accentColor.withOpacity(0.15)
-                    : Colors.grey.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isPrimary ? Config.accentColor : Colors.grey.shade400,
-                  width: isPrimary ? 1.6 : 1,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.circle,
-                    color: isPrimary ? Config.accentColor : Colors.grey,
-                    size: 10,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          e.label,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: isPrimary
-                                ? Config.primaryColor
-                                : Colors.grey,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          e.email,
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                      elevation: 2,
-                    ),
-                    onPressed: () async => await launchEmail(e.email),
-                    icon: const Icon(Icons.email_outlined, size: 16),
-                    label: const Text(
-                      "Send",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
-        ],
-
-        // -------------------- PHONE NUMBERS --------------------
-        if (doctor.numbers != null && doctor.numbers!.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              const Icon(Icons.phone, color: Config.primaryColor),
-              const SizedBox(width: 8),
-              Text(
-                "Phone Numbers",
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-
-          ...doctor.numbers!.map((p) {
-            final bool isPrimary = p.isPrimary;
-
-            return Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: isPrimary
-                    ? Config.accentColor.withOpacity(0.15)
-                    : Colors.grey.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isPrimary ? Config.accentColor : Colors.grey.shade400,
-                  width: isPrimary ? 1.6 : 1,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.circle,
-                    color: isPrimary ? Config.accentColor : Colors.grey,
-                    size: 10,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          p.label,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: isPrimary
-                                ? Config.primaryColor
-                                : Colors.grey,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          p.email,
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
-        ],
-      ],
     );
   }
 
@@ -556,7 +552,7 @@ class DoctorScheduleSection extends ConsumerWidget {
     };
 
     return scheduleAsync.when(
-      loading: () => const CircularProgressIndicator(),
+      loading: () => const SizedBox.shrink(),
       error: (err, stack) => Text(
         'Failed to load schedule',
         style: theme.textTheme.bodyLarge!.copyWith(color: Colors.red),
@@ -570,77 +566,81 @@ class DoctorScheduleSection extends ConsumerWidget {
           (a, b) => dayOrder[a.dayOfWeek]!.compareTo(dayOrder[b.dayOfWeek]!),
         );
 
-        return ExpansionTile(
-          initiallyExpanded: false,
-          iconColor: Config.primaryColor,
-          collapsedIconColor: Config.primaryColor,
-          textColor: Config.primaryColor,
-          collapsedTextColor: theme.textTheme.bodyLarge!.color,
-          expandedCrossAxisAlignment: CrossAxisAlignment.start,
-          tilePadding: const EdgeInsets.all(0),
-          title: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: 4,
-            children: [
-              const Icon(FontAwesomeIcons.solidCalendarCheck),
-              Text(
-                "Schedules",
-                style: theme.textTheme.headlineSmall!.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          children: schedule.map((item) {
-            return Container(
-              margin: const EdgeInsets.only(bottom: 10),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: theme.cardTheme.color,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.withOpacity(0.3)),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.circle,
-                    color: Config.accentColor,
-                    size: 10,
+        return Theme(
+          data: theme.copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            initiallyExpanded: true,
+            iconColor: Config.primaryColor,
+            collapsedIconColor: Config.primaryColor,
+            textColor: Config.primaryColor,
+            collapsedTextColor: theme.textTheme.bodyLarge!.color,
+            expandedCrossAxisAlignment: CrossAxisAlignment.start,
+            tilePadding: const EdgeInsets.all(0),
+
+            title: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              spacing: 4,
+              children: [
+                const Icon(FontAwesomeIcons.solidCalendarCheck),
+                Text(
+                  "Schedules",
+                  style: theme.textTheme.headlineSmall!.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.dayOfWeek,
-                          style: theme.textTheme.bodyLarge!.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "${item.startTime} - ${item.endTime}",
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                        if (item.note.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Text(
-                              item.note,
-                              style: theme.textTheme.bodyMedium!.copyWith(
-                                color: Colors.grey,
-                              ),
+                ),
+              ],
+            ),
+            children: schedule.map((item) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: theme.cardTheme.color,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.circle,
+                      color: Config.accentColor,
+                      size: 10,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.dayOfWeek,
+                            style: theme.textTheme.bodyLarge!.copyWith(
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                      ],
+                          const SizedBox(height: 4),
+                          Text(
+                            "${item.startTime} - ${item.endTime}",
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          if (item.note.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                item.note,
+                                style: theme.textTheme.bodyMedium!.copyWith(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          }).toList(),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
         );
       },
     );
@@ -658,7 +658,7 @@ class DoctorExceptionScheduleSection extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return scheduleAsync.when(
-      loading: () => const CircularProgressIndicator(),
+      loading: () => const SizedBox.shrink(),
       error: (err, stack) => Text(
         'Failed to load schedule',
         style: theme.textTheme.bodyLarge!.copyWith(color: Colors.red),
@@ -733,10 +733,3 @@ class DoctorExceptionScheduleSection extends ConsumerWidget {
     );
   }
 }
-
-
-
-
-
-
-

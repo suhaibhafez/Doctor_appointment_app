@@ -26,6 +26,7 @@ class CoolButton extends StatelessWidget {
     return ElevatedButton.icon(
       icon: icon,
       style: ElevatedButton.styleFrom(
+        minimumSize: Size(0, isSmall ? 40 : 50),
         backgroundColor: backgroundColor,
         foregroundColor: forGroundColor,
         shadowColor: borderColor ?? Config.primaryColor,
@@ -42,12 +43,13 @@ class CoolButton extends StatelessWidget {
           vertical: isSmall ? 10 : 16,
         ),
       ),
+
       onPressed: onclick,
       label: FittedBox(
         child: Text(
           text,
-          style: TextStyle(
-            fontSize: isSmall ? 14 : 18,
+          style: const TextStyle(
+            fontSize: 12,
             fontWeight: FontWeight.w600,
           ),
         ),

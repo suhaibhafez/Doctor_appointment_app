@@ -16,6 +16,7 @@ import 'package:doctor_appointment_app/view_model/Doctor/doctor_schedule_excepti
 import 'package:doctor_appointment_app/view_model/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:get/route_manager.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -151,7 +152,9 @@ class _BookingPageState extends ConsumerState<BookingPage> {
                                 child: Center(
                                   child: Text(
                                     capacityAsync.error.toString(),
-                                    style:const TextStyle(color: Config.errorColor),
+                                    style: const TextStyle(
+                                      color: Config.errorColor,
+                                    ),
                                   ),
                                 ),
                               );
@@ -200,6 +203,9 @@ class _BookingPageState extends ConsumerState<BookingPage> {
                   final appointmentsNotifier = ref.read(
                     appointmentsProvider.notifier,
                   );
+                  setState(() {
+                    _isBooking = true;
+                  });
                   // Call your AsyncNotifier (adjust provider name if different)
                   await Get.showOverlay(
                     asyncFunction: () async =>
@@ -213,6 +219,9 @@ class _BookingPageState extends ConsumerState<BookingPage> {
 
                     loadingWidget: const Loading(),
                   );
+                  setState(() {
+                    _isBooking = false;
+                  });
                   final error = appointmentsNotifier.addingAppointmentError;
                   if (error != null) {
                     await Get.dialog(
@@ -322,6 +331,7 @@ class _BookingPageState extends ConsumerState<BookingPage> {
   Widget _tableCalendar() {
     return TableCalendar(
       focusedDay: _focusDay,
+
       firstDay: DateTime.now().add(const Duration(days: 1)),
       lastDay: DateTime(2025, 12, 31),
       locale: ref
