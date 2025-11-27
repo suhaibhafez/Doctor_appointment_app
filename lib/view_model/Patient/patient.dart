@@ -1,27 +1,44 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:doctor_appointment_app/models/Patient/patient.dart';
 
 import 'package:doctor_appointment_app/services/local_storage_services.dart';
 import 'package:doctor_appointment_app/services/log_service.dart';
 import 'package:doctor_appointment_app/services/patient_services.dart';
-import 'package:flutter/rendering.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final patientNotifier = AsyncNotifierProvider<PatientNotifier, Patient?>(
   PatientNotifier.new,
-  retry: (retryCount, error) => const Duration(seconds: 2),
+  retry: (retryCount, error) {
+    // Only retry on network errors, not authentication errors
+    if (!((error as DioException).response?.statusCode == 401)) {
+      return const Duration(seconds: 2);
+    }
+    return null;
+  },
 );
 
 class PatientNotifier extends AsyncNotifier<Patient?> {
   @override
   FutureOr<Patient?> build() async {
-    state = const AsyncValue.loading();
+    // state = const AsyncValue.loading();
 
     final token = LocalStorageService.getToken;
-   
-    return await getPatient(token!);
+    if (token == null) {
+      return null;
+    }
+
+    try {
+      final patient = await getPatient(token);
+      LogService.i('Succesfully loaded patient');
+      return patient;
+    } catch (error) {
+      // Handle specific error cases instead of infinite retry
+      LogService.e('Failed to load patient', error);
+      rethrow; // Let the UI handle the error state
+    }
   }
 
   Future<Patient> getPatient(String token) async {
@@ -91,7 +108,7 @@ class PatientNotifier extends AsyncNotifier<Patient?> {
         password: password,
         email: email,
       );
-      state = const AsyncValue.data(null);
+      // state = const AsyncValue.data(null);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }

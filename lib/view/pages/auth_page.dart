@@ -46,7 +46,7 @@ class _AuthPageState extends State<AuthPage> {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        "Shifa",
+                        "SHIFA",
                         style: TextStyle(
                           fontSize: 34,
                           fontWeight: FontWeight.w700,
@@ -97,6 +97,9 @@ class _AuthPageState extends State<AuthPage> {
                           ).colorScheme.onSurface.withOpacity(0.7),
                           height: 1.4,
                         ),
+                      ),
+                      const SizedBox(
+                        height: 4,
                       ),
                     ],
                   ),

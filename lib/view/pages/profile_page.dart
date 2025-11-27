@@ -1,6 +1,7 @@
 import "package:doctor_appointment_app/l10n/app_localizations.dart";
 import "package:doctor_appointment_app/models/Patient/allergy.dart";
 import "package:doctor_appointment_app/models/Patient/chronic_disease.dart";
+import "package:doctor_appointment_app/models/Patient/patient.dart";
 import "package:doctor_appointment_app/view_model/Patient/allergy.dart";
 import "package:doctor_appointment_app/view_model/Patient/chronic_disease.dart";
 
@@ -21,14 +22,10 @@ import "package:font_awesome_flutter/font_awesome_flutter.dart";
 import "package:get/route_manager.dart";
 import "package:intl/intl.dart";
 
-class ProfilePage extends ConsumerStatefulWidget {
-  const ProfilePage({super.key});
+class ProfilePage extends ConsumerWidget {
+  const ProfilePage({super.key,required this.patient});
+  final Patient patient;
 
-  @override
-  ConsumerState<ProfilePage> createState() => _ProfilePageState();
-}
-
-class _ProfilePageState extends ConsumerState<ProfilePage> {
   void handleAsyncState<T>(
     AsyncValue<T> next, {
     required String errorMessage,
@@ -53,38 +50,40 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    ref.listen(patientNotifier, (previous, next) async {
-      handleAsyncState(
-        next,
-        errorMessage: 'Something went wrong fetching patient data',
-        onData: () async {
-          if (Get.isDialogOpen!) Get.back();
-          if (next.value == null) {
-            await Get.offAllNamed(Sroutes.auth);
-          }
-        },
-      );
-    });
+  Widget build(BuildContext context, WidgetRef ref) {
+    // ref.listen(patientNotifier, (previous, next) async {
+    //   handleAsyncState(
+    //     next,
+    //     errorMessage: 'Something went wrong fetching patient data',
+    //     onData: () async {
+    //       if (Get.isDialogOpen!) Get.back();
+    //       if (next.value == null) {
+    //         await Get.offAllNamed(Sroutes.auth);
+    //       }
+    //     },
+    //   );
+    // });
 
     Config().init(context);
 
     return SafeArea(
       child: RefreshIndicator(
         onRefresh: () async {
-          ref.invalidate(patientNotifier);
+          // ref.invalidate(patientNotifier);
           ref.invalidate(chronicDiseaseProvider);
           ref.invalidate(allergiesProvider);
           ref.invalidate(settingsProvider);
         },
-        child: const SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 24),
+        child:  SingleChildScrollView(
+          padding:const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              PatientDetailsSection(),
-              SizedBox(height: 10),
-              SettingsSection(),
+              PatientDetailsSection(
+                patient: patient,
+              ),
+             const SizedBox(height: 10),
+            const  SettingsSection(),
             ],
           ),
         ),
@@ -97,12 +96,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 // 🩺 1️⃣ Patient Details Section
 //
 class PatientDetailsSection extends ConsumerWidget {
-  const PatientDetailsSection({super.key});
-
+  const PatientDetailsSection({super.key, required this.patient});
+  final Patient patient;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final patientAsync = ref.watch(patientNotifier);
-
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
 
@@ -121,79 +118,70 @@ class PatientDetailsSection extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // --- Row: profile picture + info ---
-                patientAsync.when(
-                  data: (patient) {
-                    if (patient == null) {
-                      return const Center(child: Text('No patient data found'));
-                    }
-                    return Row(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: theme.colorScheme.primary.withOpacity(0.3),
-                              width: 3,
-                            ),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 8,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: CircleAvatar(
-                            radius: 55,
-                            backgroundColor: Colors.transparent,
-                            child: Icon(
-                              Icons.person_outline,
-                              size: 70,
-                              color: theme.colorScheme.primary.withOpacity(0.7),
-                            ),
-                          ),
+                Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: theme.colorScheme.primary.withOpacity(0.3),
+                          width: 3,
                         ),
-                        const SizedBox(width: 24),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${patient.firstName} ${patient.lastName}',
-                                style: textTheme.headlineSmall!.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-
-                              Text(
-                                patient.nationalId,
-                                style: textTheme.bodyMedium!.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                  color: theme.colorScheme.primary,
-                                ),
-                              ),
-
-                              const SizedBox(height: 4),
-                              Text(
-                                DateFormat(
-                                  'yyyy-MM-dd',
-                                ).format(patient.dateOfBirth!),
-                                style: textTheme.bodyMedium,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                patient.gender!,
-                                style: textTheme.bodyMedium,
-                              ),
-                            ],
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 8,
+                            offset: Offset(0, 4),
                           ),
+                        ],
+                      ),
+                      child: CircleAvatar(
+                        radius: 55,
+                        backgroundColor: Colors.transparent,
+                        child: Icon(
+                          Icons.person_outline,
+                          size: 70,
+                          color: theme.colorScheme.primary.withOpacity(0.7),
                         ),
-                      ],
-                    );
-                  },
-                  loading: () => const PatientDetailsShimmer(),
-                  error: (_, __) => const Center(child: Text('Error')),
+                      ),
+                    ),
+                    const SizedBox(width: 24),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${patient.firstName} ${patient.lastName}',
+                            style: textTheme.headlineSmall!.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+
+                          Text(
+                            patient.nationalId,
+                            style: textTheme.bodyMedium!.copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+
+                          const SizedBox(height: 4),
+                          Text(
+                            DateFormat(
+                              'yyyy-MM-dd',
+                            ).format(patient.dateOfBirth!),
+                            style: textTheme.bodyMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            patient.gender!,
+                            style: textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 24),
@@ -397,6 +385,8 @@ class SettingsSection extends ConsumerWidget {
                     isSmall: false,
                     onclick: () async {
                       await ref.read(patientNotifier.notifier).logout();
+                      await Get.offAllNamed(Sroutes.auth);
+
                     },
                     icon: const Icon(
                       Icons.logout_outlined,

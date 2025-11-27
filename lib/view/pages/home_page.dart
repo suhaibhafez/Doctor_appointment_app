@@ -1,3 +1,4 @@
+import 'package:doctor_appointment_app/models/Patient/patient.dart';
 import 'package:doctor_appointment_app/models/notification_model.dart';
 import 'package:doctor_appointment_app/routes/routes.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
@@ -10,7 +11,6 @@ import 'package:doctor_appointment_app/view/components/DoctorsComponents/doctor_
 import 'package:doctor_appointment_app/view_model/Appointment/appointments_today.dart';
 import 'package:doctor_appointment_app/view_model/Doctor/doctors.dart';
 
-import 'package:doctor_appointment_app/view_model/Patient/patient.dart';
 import 'package:doctor_appointment_app/view_model/notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,12 +19,12 @@ import 'package:get/get.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomePage extends ConsumerWidget {
-  const HomePage({super.key});
+  final Patient patient;
+  const HomePage({super.key, required this.patient});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     Config().init(context);
-    final patientAsync = ref.watch(patientNotifier);
 
     return Scaffold(
       body: SafeArea(
@@ -66,48 +66,40 @@ class HomePage extends ConsumerWidget {
                   ),
 
                   // Patient info + Notification on the right
-                  patientAsync.when(
-                    loading: () => const CircularProgressIndicator(),
-                    error: (err, stack) => Icon(
-                      Icons.error_outline,
-                      color: Theme.of(context).colorScheme.error,
-                      size: 24,
-                    ),
-                    data: (patient) => Expanded(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          // Patient info
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${patient!.firstName} ${patient.lastName}',
-                                style: Theme.of(context).textTheme.titleLarge!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
-                                textAlign: TextAlign.right,
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                patient.nationalId,
-                                style: Theme.of(context).textTheme.bodyMedium!
-                                    .copyWith(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(width: 12),
-                          // Notification bell
-                          const NotificationBell(),
-                        ],
-                      ),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        // Patient info
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${patient.firstName} ${patient.lastName}',
+                              style: Theme.of(context).textTheme.titleLarge!
+                                  .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                              textAlign: TextAlign.right,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              patient.nationalId,
+                              style: Theme.of(context).textTheme.bodyMedium!
+                                  .copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 12),
+                        // Notification bell
+                        const NotificationBell(),
+                      ],
                     ),
                   ),
                 ],
@@ -202,7 +194,7 @@ class HomePage extends ConsumerWidget {
                                   ),
                                 );
                               }
-                             
+
                               final notifier = ref.read(
                                 doctorProvider(null).notifier,
                               );
@@ -392,7 +384,7 @@ class _AppointmentsTodayListState extends ConsumerState<AppointmentsTodayList> {
             /// Wrap PageView in SizedBox   so height is determined by the CARD,
             /// not infinite page view.
             SizedBox(
-              height: 325,
+              height: 315,
               child: PageView.builder(
                 controller: _controller,
                 physics: const BouncingScrollPhysics(),

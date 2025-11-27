@@ -9,6 +9,7 @@ class LogService {
       colors: true,
       printEmojis: true,
       printTime: false,
+      
     ),
   );
 

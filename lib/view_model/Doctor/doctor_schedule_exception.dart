@@ -14,4 +14,6 @@ final doctorScheduleExceptionProvider =
           token!,
         );
       },
+    retry: (retryCount, error) => const Duration(seconds: 2),
+
     );
