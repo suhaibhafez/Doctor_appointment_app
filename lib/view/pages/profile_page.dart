@@ -225,37 +225,31 @@ class PatientDetailsSection extends ConsumerWidget {
                   height: 2,
                 ),
                 const SizedBox(height: 25),
-                // --- Buttons: medical record + logout ---
+                // --- Buttons: medical record + Billings ---
                 Row(
                   spacing: 10,
                   children: [
                     Expanded(
-                      child: SizedBox(
-                        width: 60,
-                        child: CoolButton(
-                          isSmall: isSmall,
-                          onclick: () async {
-                            await Get.toNamed(Sroutes.medicalRecordPage);
-                          },
-                          text: "Medical History",
-                          icon: const Icon(Icons.history, size: 20),
-                        ),
+                      child: CoolButton(
+                        isSmall: isSmall,
+                        onclick: () async {
+                          await Get.toNamed(Sroutes.medicalRecordPage);
+                        },
+                        text: "Medical History",
+                        icon: const Icon(Icons.history, size: 20),
                       ),
                     ),
                     Expanded(
-                      child: SizedBox(
-                        width: 60,
-                        child: CoolButton(
-                          isSmall: isSmall,
-                          onclick: () async {
-                            await Get.toNamed(Sroutes.billingPage);
-                          },
-                          icon: const Icon(
-                            Icons.receipt_long,
-                            size: 20,
-                          ),
-                          text: 'Billing',
+                      child: CoolButton(
+                        isSmall: isSmall,
+                        onclick: () async {
+                          await Get.toNamed(Sroutes.billingPage);
+                        },
+                        icon: const Icon(
+                          Icons.receipt_long,
+                          size: 20,
                         ),
+                        text: 'Billings',
                       ),
                     ),
                   ],

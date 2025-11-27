@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:doctor_appointment_app/models/Patient/patient.dart';
 
 import 'package:doctor_appointment_app/services/local_storage_services.dart';
+import 'package:doctor_appointment_app/services/log_service.dart';
 import 'package:doctor_appointment_app/services/patient_services.dart';
 import 'package:flutter/rendering.dart';
 
@@ -19,11 +20,8 @@ class PatientNotifier extends AsyncNotifier<Patient?> {
     state = const AsyncValue.loading();
 
     final token = LocalStorageService.getToken;
-    debugPrint(token);
-    if (token == null) {
-      return null; // 👈 User not logged in yet
-    }
-     return await getPatient(token);
+   
+    return await getPatient(token!);
   }
 
   Future<Patient> getPatient(String token) async {
@@ -33,20 +31,33 @@ class PatientNotifier extends AsyncNotifier<Patient?> {
   Future<void> login(String email, String password) async {
     state = const AsyncValue.loading();
     try {
-      final token = await PatientService.login(email, password, ref);
+      final data = await PatientService.login(email, password, ref);
+      final token = data['token'];
+      final userId = data['userId'];
+
       await LocalStorageService.setToken(token);
+      await LocalStorageService.setUserId(userId);
+      LogService.i('Setting local storage with token:$token');
+      LogService.i('userId:$userId');
+
       try {
-        final patient = await getPatient(token);
+        final patient = await getPatient(token!);
         state = AsyncValue.data(patient);
       } catch (e, st) {
+        LogService.e('Logging in Failed', e);
+
         // 👇 If fetching patient after login fails, clear token and show error
         await LocalStorageService.clearToken();
+        await LocalStorageService.clearUserId();
+
         state = AsyncValue.error(
           'Login failed: invalid token or server error',
           st,
         );
       }
     } catch (error, stackTrace) {
+      LogService.e('Setting local storage with token and userId failed', error);
+
       state = AsyncValue.error(error, stackTrace);
     }
   }
@@ -55,8 +66,12 @@ class PatientNotifier extends AsyncNotifier<Patient?> {
     state = const AsyncValue.loading();
     try {
       await LocalStorageService.clearToken();
+      await LocalStorageService.clearUserId();
       state = const AsyncValue.data(null);
+      LogService.i('Logging out Success');
     } catch (error, stackTrace) {
+      LogService.e('Logging out Failed', error);
+
       state = AsyncValue.error(error, stackTrace);
     }
   }

@@ -10,7 +10,7 @@ import 'package:doctor_appointment_app/services/local_storage_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PatientService {
-  static Future<String> login(
+  static Future<Map<String, String>> login(
     String email,
     String password,
     Ref ref,
@@ -24,8 +24,14 @@ class PatientService {
       },
     );
 
-    final token = response.data['accessToken'];
-    return token;
+    final String token = response.data['accessToken'];
+    final String userID = response.data['user']['id'];
+    final Map<String, String> data = {
+      'token':token,
+      'userId':userID
+
+    };
+    return data;
   }
 
   static Future<bool> logout() => LocalStorageService.clearToken();

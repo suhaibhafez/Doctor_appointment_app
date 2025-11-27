@@ -49,7 +49,7 @@ class CoolButton extends StatelessWidget {
         child: Text(
           text,
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
         ),

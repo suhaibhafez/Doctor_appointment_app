@@ -1,11 +1,13 @@
 import 'package:doctor_appointment_app/l10n/app_localizations.dart';
+import 'package:doctor_appointment_app/services/log_service.dart';
+import 'package:doctor_appointment_app/services/signal_r_service.dart';
 
 import 'package:doctor_appointment_app/utils/config.dart';
 import 'package:doctor_appointment_app/view/pages/appointments_page.dart';
 import 'package:doctor_appointment_app/view/pages/home_page.dart';
 import 'package:doctor_appointment_app/view/pages/search_page.dart';
 import 'package:doctor_appointment_app/view/pages/profile_page.dart';
-import 'package:doctor_appointment_app/view_model/Patient/patient.dart';
+
 import 'package:doctor_appointment_app/view_model/notification.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +24,7 @@ class MainLayout extends ConsumerStatefulWidget {
 
 class _MainLayoutState extends ConsumerState<MainLayout> {
   int currentIndex = 0;
-
+  late SignalRService signalR;
   final PageController _pageController = PageController();
   void show({
     required BuildContext context,
@@ -62,7 +64,6 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
     );
   }
 
-  
   @override
   void initState() {
     super.initState();
@@ -70,21 +71,21 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
   }
 
   void _setupSignalR() {
-    final signalR = ref.read(signalRServiceProvider);
-    final patient = ref.read(patientNotifier).value;
+    signalR = ref.read(signalRServiceProvider);
 
-    if (patient == null) {
-      print('No patient - cannot setup SignalR');
-      return;
-    }
+
 
     if (signalR.isConnected) {
-      print('SignalR already connected');
+      LogService.i('SignalR already connected');
+
       return;
     }
+  
 
-    print('Setting up SignalR connection');
+    LogService.i('SignalR connection started from main');
+
     signalR.onReceiveNotification((notification) {
+     
       ref.read(notificationsProvider.notifier).addNotification(notification);
       ref.invalidate(unreadCountProvider);
       show(
@@ -96,12 +97,13 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
     });
 
     signalR.startConnection().then((_) {
-      signalR.joinUserGroup(patient.id);
+      signalR.joinUserGroup("d84f26a0-9327-41f6-932d-47dc1e0fa5d1");
     });
   }
 
   @override
   void dispose() {
+    signalR.stopConnection();
     // Only stop if you're sure the app is closing
     // ref.read(signalRServiceProvider).stopConnection();
     super.dispose();

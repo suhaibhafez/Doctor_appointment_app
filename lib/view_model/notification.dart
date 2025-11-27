@@ -65,7 +65,7 @@ class NotificationsNotifier extends AsyncNotifier<List<NotificationModel>> {
         state.value!.where((e) => e.id != notificationId).toList(),
       );
     } catch (e, st) {
-      print('Error marking notification as read: $e');
+     
       state = AsyncValue.error(e, st);
       // You can show a snackbar or handle the error as needed
     }
@@ -83,7 +83,7 @@ class NotificationsNotifier extends AsyncNotifier<List<NotificationModel>> {
 
       state = const AsyncData([]);
     } catch (e, st) {
-      print('Error marking all notifications as read: $e');
+     
       state = AsyncValue.error(e, st);
     }
   }

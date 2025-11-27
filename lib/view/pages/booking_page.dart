@@ -16,7 +16,7 @@ import 'package:doctor_appointment_app/view_model/Doctor/doctor_schedule_excepti
 import 'package:doctor_appointment_app/view_model/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
+
 import 'package:get/route_manager.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
