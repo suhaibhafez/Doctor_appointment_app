@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:doctor_appointment_app/l10n/app_localizations.dart';
 // import 'package:doctor_appointment_app/l10n/app_localizations.dart';
 import 'package:doctor_appointment_app/models/Facility/facility.dart';
 import 'package:doctor_appointment_app/models/Facility/facility_exception_schedule.dart';
@@ -43,9 +44,11 @@ class FacilityDetails extends ConsumerWidget {
     final facilityAsync = ref.watch(facilityByIdProvider(facilityId));
 
     return Scaffold(
-      appBar: const CustomAppbar(
-        appTitle: 'Facility Details',
-        icon: FaIcon(Icons.arrow_back_ios),
+      appBar: CustomAppbar(
+        appTitle: AppLocalizations.of(context)!.localeName == 'en'
+            ? 'Facility Details'
+            : 'تفاصيل المرفق',
+        icon: const FaIcon(Icons.arrow_back_ios),
       ),
       body: SafeArea(
         child: Padding(
@@ -142,6 +145,7 @@ class _FacilityHeaderCard extends StatelessWidget {
             // Facility Name
             Text(
               facility.name,
+              textAlign: TextAlign.left,
               style: theme.textTheme.headlineSmall?.copyWith(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.bold,
@@ -164,11 +168,10 @@ class _FacilityHeaderCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            _FacilityDetailRow(
-              icon: Icons.local_hospital_outlined,
-              text: "Type: ${facility.type}",
-            ),
-
+            // _FacilityDetailRow(
+            //   icon: Icons.local_hospital_outlined,
+            //   text: "Type: ${facility.type}",
+            // ),
             const SizedBox(height: 20),
 
             // Map Section
@@ -223,7 +226,7 @@ class _DepartmentsPart extends HookConsumerWidget {
     final theme = Theme.of(context);
     final selectedIndex = useState(0);
     final departmentAsync = ref.watch(departmentsProvider(facilityId));
-
+    final t = AppLocalizations.of(context)!;
     return departmentAsync.when(
       data: (departments) {
         if (departments.isEmpty) {
@@ -243,7 +246,7 @@ class _DepartmentsPart extends HookConsumerWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Medical Departments',
+                  t.medicalDepartments,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -252,7 +255,7 @@ class _DepartmentsPart extends HookConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Browse departments and find specialized doctors',
+              t.browseDepartmentsAndFindSpecializedDoctors,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withOpacity(0.6),
               ),
@@ -299,7 +302,7 @@ class _DepartmentsPart extends HookConsumerWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'About ${departments[selectedIndex.value].name}',
+                    '${t.about} ${departments[selectedIndex.value].name}',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -327,7 +330,7 @@ class _DepartmentsPart extends HookConsumerWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Specialized Doctors',
+                  t.specializedDoctors,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
@@ -336,7 +339,7 @@ class _DepartmentsPart extends HookConsumerWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'Experienced medical professionals in ${departments[selectedIndex.value].name}',
+              '${t.experiencedMedicalProfessionalsIn} ${departments[selectedIndex.value].name}',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withOpacity(0.6),
               ),
@@ -775,7 +778,7 @@ class FacilityScheduleSection extends ConsumerWidget {
           children: [
             const Icon(FontAwesomeIcons.solidCalendarCheck),
             Text(
-              "Schedules",
+              AppLocalizations.of(context)!.schedule,
               style: theme.textTheme.headlineSmall!.copyWith(
                 fontWeight: FontWeight.bold,
               ),

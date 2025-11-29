@@ -134,7 +134,7 @@ abstract class AppLocalizations {
   /// No description provided for @dontHaveAccount.
   ///
   /// In en, this message translates to:
-  /// **'Don’t have an account?'**
+  /// **'Don\'t have an account?'**
   String get dontHaveAccount;
 
   /// No description provided for @signUp.
@@ -179,12 +179,6 @@ abstract class AppLocalizations {
   /// **'Specialization'**
   String get specialization;
 
-  /// No description provided for @appointmentToday.
-  ///
-  /// In en, this message translates to:
-  /// **'Appointment Today'**
-  String get appointmentToday;
-
   /// No description provided for @topDoctors.
   ///
   /// In en, this message translates to:
@@ -203,11 +197,11 @@ abstract class AppLocalizations {
   /// **'Confirm'**
   String get confirm;
 
-  /// No description provided for @reviews.
+  /// No description provided for @rate.
   ///
   /// In en, this message translates to:
-  /// **'Reviews'**
-  String get reviews;
+  /// **'Rate'**
+  String get rate;
 
   /// No description provided for @home.
   ///
@@ -269,12 +263,6 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get profile;
 
-  /// No description provided for @medicalRecord.
-  ///
-  /// In en, this message translates to:
-  /// **'Medical Record'**
-  String get medicalRecord;
-
   /// No description provided for @logout.
   ///
   /// In en, this message translates to:
@@ -314,7 +302,7 @@ abstract class AppLocalizations {
   /// No description provided for @makeAppointment.
   ///
   /// In en, this message translates to:
-  /// **'Make Appointment'**
+  /// **'Confirm Appointment'**
   String get makeAppointment;
 
   /// No description provided for @successfullyBooked.
@@ -538,6 +526,618 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Specialized Center'**
   String get facility_SpecializedCenter;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @rebook.
+  ///
+  /// In en, this message translates to:
+  /// **'Rebook'**
+  String get rebook;
+
+  /// No description provided for @moreInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'More info'**
+  String get moreInfo;
+
+  /// No description provided for @more.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get more;
+
+  /// No description provided for @todaysAppointments.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Appointments'**
+  String get todaysAppointments;
+
+  /// No description provided for @exploreSpecialities.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore Specialities'**
+  String get exploreSpecialities;
+
+  /// No description provided for @exploreFacilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore Facilities'**
+  String get exploreFacilities;
+
+  /// No description provided for @noDoctorsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No doctors found'**
+  String get noDoctorsFound;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @type.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get type;
+
+  /// No description provided for @billings.
+  ///
+  /// In en, this message translates to:
+  /// **'Billings'**
+  String get billings;
+
+  /// No description provided for @medicalHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical History'**
+  String get medicalHistory;
+
+  /// No description provided for @send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// No description provided for @contacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get contacts;
+
+  /// No description provided for @emails.
+  ///
+  /// In en, this message translates to:
+  /// **'Emails'**
+  String get emails;
+
+  /// No description provided for @phoneNumbers.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Numbers'**
+  String get phoneNumbers;
+
+  /// No description provided for @schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get schedule;
+
+  /// No description provided for @getDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Directions'**
+  String get getDirections;
+
+  /// No description provided for @confirmAppointment.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Appointment'**
+  String get confirmAppointment;
+
+  /// No description provided for @selectConsultationTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Consultation Time'**
+  String get selectConsultationTime;
+
+  /// No description provided for @medicalDepartments.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical Departments'**
+  String get medicalDepartments;
+
+  /// No description provided for @specializedDoctors.
+  ///
+  /// In en, this message translates to:
+  /// **'Specialized Doctors'**
+  String get specializedDoctors;
+
+  /// No description provided for @browseDepartmentsAndFindSpecializedDoctors.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse departments and find specialized doctors'**
+  String get browseDepartmentsAndFindSpecializedDoctors;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @experiencedMedicalProfessionalsIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Experienced medical professionals in'**
+  String get experiencedMedicalProfessionalsIn;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @appointmentInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Appointment Info'**
+  String get appointmentInfo;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @time.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get time;
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
+  /// No description provided for @bookedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked on'**
+  String get bookedOn;
+
+  /// No description provided for @checkIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in'**
+  String get checkIn;
+
+  /// No description provided for @checkOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-out'**
+  String get checkOut;
+
+  /// No description provided for @patient.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient'**
+  String get patient;
+
+  /// No description provided for @gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get gender;
+
+  /// No description provided for @doctor.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor'**
+  String get doctor;
+
+  /// No description provided for @facility.
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get facility;
+
+  /// No description provided for @state.
+  ///
+  /// In en, this message translates to:
+  /// **'State'**
+  String get state;
+
+  /// No description provided for @street.
+  ///
+  /// In en, this message translates to:
+  /// **'Street'**
+  String get street;
+
+  /// No description provided for @billing.
+  ///
+  /// In en, this message translates to:
+  /// **'Billing'**
+  String get billing;
+
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @issued.
+  ///
+  /// In en, this message translates to:
+  /// **'Issued'**
+  String get issued;
+
+  /// No description provided for @paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get paid;
+
+  /// No description provided for @paidOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid On'**
+  String get paidOn;
+
+  /// No description provided for @prescriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Prescriptions'**
+  String get prescriptions;
+
+  /// No description provided for @medications.
+  ///
+  /// In en, this message translates to:
+  /// **'Medications'**
+  String get medications;
+
+  /// No description provided for @dosage.
+  ///
+  /// In en, this message translates to:
+  /// **'Dosage'**
+  String get dosage;
+
+  /// No description provided for @female.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get female;
+
+  /// No description provided for @male.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get male;
+
+  /// No description provided for @appointmentStatusAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get appointmentStatusAll;
+
+  /// No description provided for @appointmentStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get appointmentStatusPending;
+
+  /// No description provided for @appointmentStatusConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get appointmentStatusConfirmed;
+
+  /// No description provided for @appointmentStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get appointmentStatusCompleted;
+
+  /// No description provided for @appointmentStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get appointmentStatusCancelled;
+
+  /// No description provided for @chronicDiseases.
+  ///
+  /// In en, this message translates to:
+  /// **'Chronic Diseases'**
+  String get chronicDiseases;
+
+  /// No description provided for @chronicDisease_Diabetes.
+  ///
+  /// In en, this message translates to:
+  /// **'Diabetes'**
+  String get chronicDisease_Diabetes;
+
+  /// No description provided for @chronicDisease_Hypertension.
+  ///
+  /// In en, this message translates to:
+  /// **'Hypertension'**
+  String get chronicDisease_Hypertension;
+
+  /// No description provided for @chronicDisease_Asthma.
+  ///
+  /// In en, this message translates to:
+  /// **'Asthma'**
+  String get chronicDisease_Asthma;
+
+  /// No description provided for @chronicDisease_HeartDisease.
+  ///
+  /// In en, this message translates to:
+  /// **'Heart Disease'**
+  String get chronicDisease_HeartDisease;
+
+  /// No description provided for @chronicDisease_ChronicKidneyDisease.
+  ///
+  /// In en, this message translates to:
+  /// **'Chronic Kidney Disease'**
+  String get chronicDisease_ChronicKidneyDisease;
+
+  /// No description provided for @chronicDisease_ChronicLiverDisease.
+  ///
+  /// In en, this message translates to:
+  /// **'Chronic Liver Disease'**
+  String get chronicDisease_ChronicLiverDisease;
+
+  /// No description provided for @chronicDisease_Epilepsy.
+  ///
+  /// In en, this message translates to:
+  /// **'Epilepsy'**
+  String get chronicDisease_Epilepsy;
+
+  /// No description provided for @chronicDisease_COPD.
+  ///
+  /// In en, this message translates to:
+  /// **'COPD'**
+  String get chronicDisease_COPD;
+
+  /// No description provided for @chronicDisease_Arthritis.
+  ///
+  /// In en, this message translates to:
+  /// **'Arthritis'**
+  String get chronicDisease_Arthritis;
+
+  /// No description provided for @chronicDisease_Cancer.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancer'**
+  String get chronicDisease_Cancer;
+
+  /// No description provided for @chronicDisease_Depression.
+  ///
+  /// In en, this message translates to:
+  /// **'Depression'**
+  String get chronicDisease_Depression;
+
+  /// No description provided for @chronicDisease_Anxiety.
+  ///
+  /// In en, this message translates to:
+  /// **'Anxiety'**
+  String get chronicDisease_Anxiety;
+
+  /// No description provided for @chronicDisease_ThyroidDisorder.
+  ///
+  /// In en, this message translates to:
+  /// **'Thyroid Disorder'**
+  String get chronicDisease_ThyroidDisorder;
+
+  /// No description provided for @chronicDisease_Osteoporosis.
+  ///
+  /// In en, this message translates to:
+  /// **'Osteoporosis'**
+  String get chronicDisease_Osteoporosis;
+
+  /// No description provided for @chronicDisease_Alzheimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Alzheimer'**
+  String get chronicDisease_Alzheimer;
+
+  /// No description provided for @chronicDisease_Parkinson.
+  ///
+  /// In en, this message translates to:
+  /// **'Parkinson'**
+  String get chronicDisease_Parkinson;
+
+  /// No description provided for @chronicDisease_HIV.
+  ///
+  /// In en, this message translates to:
+  /// **'HIV'**
+  String get chronicDisease_HIV;
+
+  /// No description provided for @chronicDisease_Hepatitis.
+  ///
+  /// In en, this message translates to:
+  /// **'Hepatitis'**
+  String get chronicDisease_Hepatitis;
+
+  /// No description provided for @chronicDisease_Stroke.
+  ///
+  /// In en, this message translates to:
+  /// **'Stroke'**
+  String get chronicDisease_Stroke;
+
+  /// No description provided for @chronicDisease_Tuberculosis.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuberculosis'**
+  String get chronicDisease_Tuberculosis;
+
+  /// No description provided for @chronicDisease_Obesity.
+  ///
+  /// In en, this message translates to:
+  /// **'Obesity'**
+  String get chronicDisease_Obesity;
+
+  /// No description provided for @chronicDisease_Other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get chronicDisease_Other;
+
+  /// No description provided for @allergies.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergies'**
+  String get allergies;
+
+  /// No description provided for @allergy_Penicillin.
+  ///
+  /// In en, this message translates to:
+  /// **'Penicillin'**
+  String get allergy_Penicillin;
+
+  /// No description provided for @allergy_Amoxicillin.
+  ///
+  /// In en, this message translates to:
+  /// **'Amoxicillin'**
+  String get allergy_Amoxicillin;
+
+  /// No description provided for @allergy_SulfaDrugs.
+  ///
+  /// In en, this message translates to:
+  /// **'Sulfa Drugs'**
+  String get allergy_SulfaDrugs;
+
+  /// No description provided for @allergy_NSAIDs.
+  ///
+  /// In en, this message translates to:
+  /// **'NSAIDs'**
+  String get allergy_NSAIDs;
+
+  /// No description provided for @allergy_Aspirin.
+  ///
+  /// In en, this message translates to:
+  /// **'Aspirin'**
+  String get allergy_Aspirin;
+
+  /// No description provided for @allergy_Codeine.
+  ///
+  /// In en, this message translates to:
+  /// **'Codeine'**
+  String get allergy_Codeine;
+
+  /// No description provided for @allergy_Morphine.
+  ///
+  /// In en, this message translates to:
+  /// **'Morphine'**
+  String get allergy_Morphine;
+
+  /// No description provided for @allergy_Latex.
+  ///
+  /// In en, this message translates to:
+  /// **'Latex'**
+  String get allergy_Latex;
+
+  /// No description provided for @allergy_Peanuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Peanuts'**
+  String get allergy_Peanuts;
+
+  /// No description provided for @allergy_TreeNuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Tree Nuts'**
+  String get allergy_TreeNuts;
+
+  /// No description provided for @allergy_Shellfish.
+  ///
+  /// In en, this message translates to:
+  /// **'Shellfish'**
+  String get allergy_Shellfish;
+
+  /// No description provided for @allergy_Fish.
+  ///
+  /// In en, this message translates to:
+  /// **'Fish'**
+  String get allergy_Fish;
+
+  /// No description provided for @allergy_Eggs.
+  ///
+  /// In en, this message translates to:
+  /// **'Eggs'**
+  String get allergy_Eggs;
+
+  /// No description provided for @allergy_Milk.
+  ///
+  /// In en, this message translates to:
+  /// **'Milk'**
+  String get allergy_Milk;
+
+  /// No description provided for @allergy_Soy.
+  ///
+  /// In en, this message translates to:
+  /// **'Soy'**
+  String get allergy_Soy;
+
+  /// No description provided for @allergy_Wheat.
+  ///
+  /// In en, this message translates to:
+  /// **'Wheat'**
+  String get allergy_Wheat;
+
+  /// No description provided for @allergy_Pollen.
+  ///
+  /// In en, this message translates to:
+  /// **'Pollen'**
+  String get allergy_Pollen;
+
+  /// No description provided for @allergy_DustMites.
+  ///
+  /// In en, this message translates to:
+  /// **'Dust Mites'**
+  String get allergy_DustMites;
+
+  /// No description provided for @allergy_Mold.
+  ///
+  /// In en, this message translates to:
+  /// **'Mold'**
+  String get allergy_Mold;
+
+  /// No description provided for @allergy_PetDander.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet Dander'**
+  String get allergy_PetDander;
+
+  /// No description provided for @allergy_BeeStings.
+  ///
+  /// In en, this message translates to:
+  /// **'Bee Stings'**
+  String get allergy_BeeStings;
+
+  /// No description provided for @allergy_InsectStings.
+  ///
+  /// In en, this message translates to:
+  /// **'Insect Stings'**
+  String get allergy_InsectStings;
+
+  /// No description provided for @allergy_Other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get allergy_Other;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

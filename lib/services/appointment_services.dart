@@ -121,4 +121,47 @@ class AppointmentServices {
         );
     return Review.fromJson(response.data['data']);
   }
+  
+  static Future<void> cancelAppointment({
+    required Ref ref,
+    required String id,
+    required String token,
+    required String reason
+  }) async {
+    await ref
+        .read(dioProvider)
+        .put(
+          '/patients/me/appointments/$id/cancel',
+          options: Options(
+            headers: {
+              'Authorization': 'Bearer $token',
+            },
+          ),
+          data: {
+            'cancellationReason':reason
+          }
+        );
+   
+  }
+  static Future<void> reScheduleAppointment({
+    required Ref ref,
+    required String id,
+    required String token,
+    required String newDate,
+    required String newTime,
+
+     String? reason,
+  }) async {
+    await ref
+        .read(dioProvider)
+        .put(
+          '/patients/me/appointments/$id/reschedule',
+          options: Options(
+            headers: {
+              'Authorization': 'Bearer $token',
+            },
+          ),
+          data: {"newDate": newDate, "newTime": newTime, "reason": reason},
+        );
+  }
 }

@@ -1,4 +1,3 @@
-
 import 'package:doctor_appointment_app/view_model/Appointment/appointments.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
 
@@ -19,16 +18,13 @@ class AppointmentPage extends ConsumerStatefulWidget {
 }
 
 class _AppointmentPageState extends ConsumerState<AppointmentPage> {
-  late int? _selectedStatus; // default = pending
-  @override
-  void initState() {
-    _selectedStatus = ref.read(appointmentsProvider.notifier).status;
-    super.initState();
-  }
+   int? _selectedStatus; 
+ 
 
   @override
   Widget build(BuildContext context) {
     Config().init(context);
+      _selectedStatus = ref.read(appointmentsProvider.notifier).status;
     final appointmentsAsyncValue = ref.watch(appointmentsProvider);
     final appointmentsNotifier = ref.watch(appointmentsProvider.notifier);
     return SafeArea(
@@ -36,7 +32,6 @@ class _AppointmentPageState extends ConsumerState<AppointmentPage> {
         padding: const EdgeInsets.only(top: 20),
         child: Column(
           children: [
-           
             Config.spaceSmall,
             AppointmentFilterChips(
               selectedStatus: _selectedStatus,
@@ -49,7 +44,7 @@ class _AppointmentPageState extends ConsumerState<AppointmentPage> {
             Config.spaceMedium,
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(12.0),
                 child: RefreshIndicator.adaptive(
                   onRefresh: () async {
                     await appointmentsNotifier.refresh();
@@ -87,8 +82,11 @@ class _AppointmentPageState extends ConsumerState<AppointmentPage> {
                                             : 0),
                                     itemBuilder: (context, index) {
                                       if (index < appointments.length) {
-                                        return AppointmentCard(
-                                          appointment: appointments[index],
+                                        return Padding(
+                                          padding:const EdgeInsetsGeometry.all(6),
+                                          child: AppointmentCard(
+                                            appointment: appointments[index],
+                                          ),
                                         );
                                       }
 

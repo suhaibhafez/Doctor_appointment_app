@@ -105,7 +105,7 @@ class FacilitySearchState extends ConsumerState<FacilitySearch> {
                     readOnly: true,
                     controller: _typeController,
                     decoration: InputDecoration(
-                      hintText: 'Type',
+                      hintText: AppLocalizations.of(context)!.type,
                       suffixIcon: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [

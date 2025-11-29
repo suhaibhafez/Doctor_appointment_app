@@ -1,3 +1,4 @@
+import 'package:doctor_appointment_app/l10n/app_localizations.dart';
 import 'package:doctor_appointment_app/models/Appointment/appointment_details.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
 import 'package:doctor_appointment_app/utils/enums/specialitiez_facilities.dart';
@@ -26,7 +27,6 @@ class AppointmentDetailsPage extends ConsumerWidget {
     if (appointmentId.isEmpty) {
       return const Scaffold(
         appBar: CustomAppbar(
-          appTitle: 'Appointment details',
           icon: FaIcon(Icons.arrow_back_ios),
         ),
         body: Center(
@@ -36,7 +36,6 @@ class AppointmentDetailsPage extends ConsumerWidget {
     }
     return Scaffold(
       appBar: const CustomAppbar(
-        appTitle: 'Appointment details',
         icon: FaIcon(Icons.arrow_back_ios),
       ),
       body: asyncAppointment.when(
@@ -64,7 +63,7 @@ class _AppointmentDetailsBody extends StatelessWidget {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final isDark = theme.brightness == Brightness.dark;
-
+    final t = AppLocalizations.of(context)!;
     Color accent = isDark ? Config.accentColor : Config.primaryColor;
 
     Color labelColor = isDark ? Colors.white70 : Colors.black87;
@@ -75,19 +74,22 @@ class _AppointmentDetailsBody extends StatelessWidget {
         children: [
           _SectionCard(
             icon: FontAwesomeIcons.solidCalendarCheck,
-            title: "Appointment Info",
+            title: t.appointmentInfo,
             children: [
-              _InfoRow('Status', appointment.status),
+              _InfoRow(t.status, statusLocalized(appointment.status, context)),
 
-              _InfoRow("Date", _formatDate(appointment.scheduledDate)),
-              _InfoRow("Time", appointment.scheduledTime),
-              _InfoRow("Duration", "${appointment.durationMinutes} min"),
-              _InfoRow("Booked On", _formatDate(appointment.bookingDate)),
+              _InfoRow(t.date, _formatDate(appointment.scheduledDate)),
+              _InfoRow(t.time, appointment.scheduledTime),
+              _InfoRow(
+                t.duration,
+                "${appointment.durationMinutes} ${t.localeName == 'en' ? 'min' : 'دقيقة'}",
+              ),
+              _InfoRow(t.bookedOn, _formatDate(appointment.bookingDate)),
               if (appointment.checkInTime != null)
-                _InfoRow("Check-in", _formatDateTime(appointment.checkInTime!)),
+                _InfoRow(t.checkIn, _formatDateTime(appointment.checkInTime!)),
               if (appointment.checkOutTime != null)
                 _InfoRow(
-                  "Check-out",
+                  t.checkOut,
                   _formatDateTime(appointment.checkOutTime!),
                 ),
             ],
@@ -95,11 +97,14 @@ class _AppointmentDetailsBody extends StatelessWidget {
           Config.spaceSmall,
           _SectionCard(
             icon: Icons.person,
-            title: "Patient",
+            title: t.patient,
             children: [
-              _InfoRow("Name", appointment.patient.fullName!),
-              _InfoRow("National ID", appointment.patient.nationalId),
-              _InfoRow("Gender", appointment.patient.gender!),
+              _InfoRow(t.name, appointment.patient.fullName!),
+              _InfoRow(t.nationalId, appointment.patient.nationalId),
+              _InfoRow(
+                t.gender,
+                appointment.patient.gender! == 'Female' ? t.female : t.male,
+              ),
             ],
           ),
           Config.spaceSmall,
@@ -108,11 +113,11 @@ class _AppointmentDetailsBody extends StatelessWidget {
             title: "Doctor",
             children: [
               _InfoRow(
-                "Name",
+                t.name,
                 '${appointment.doctor.firstName} ${appointment.doctor.lastName}',
               ),
               _InfoRow(
-                "Specialty",
+                AppLocalizations.of(context)!.specialization,
                 getLocalizedSpe(
                   appointment.doctor.specialization,
                   context,
@@ -125,11 +130,11 @@ class _AppointmentDetailsBody extends StatelessWidget {
           Config.spaceSmall,
           _SectionCard(
             icon: Icons.apartment,
-            title: "Facility",
+            title: t.facility,
             children: [
-              _InfoRow('Name', appointment.facility.name),
-              _InfoRow('State', appointment.facility.state!),
-              _InfoRow('Street', appointment.facility.street!),
+              _InfoRow(t.name, appointment.facility.name),
+              _InfoRow(t.state, appointment.facility.state!),
+              _InfoRow(t.street, appointment.facility.street!),
 
               FacilityMapPart(
                 lat: appointment.facility.gpsLatitude!,
@@ -141,19 +146,30 @@ class _AppointmentDetailsBody extends StatelessWidget {
             Config.spaceSmall,
             _SectionCard(
               icon: Icons.receipt_long,
-              title: "Billing",
+              title: t.billing,
               children: [
-                _InfoRow("Status", appointment.billing!.status),
-                _InfoRow("Total", "${appointment.billing!.totalAmount} USD"),
                 _InfoRow(
-                  "Issued",
+                  t.status,
+                  appointment.billing!.status == 'Paid'
+                      ? t.paid
+                      : appointment.billing!.status,
+                ),
+                _InfoRow(
+                  t.total,
+                  "${appointment.billing!.totalAmount} ${t.localeName == 'en' ? 'SYP' : 'ل.س'}",
+                ),
+                _InfoRow(
+                  t.issued,
                   _formatDate(appointment.billing!.dateIssued),
                 ),
                 if (appointment.billing!.paidAmount != null)
-                  _InfoRow("Paid", "${appointment.billing!.paidAmount} USD"),
+                  _InfoRow(
+                    t.paid,
+                    "${appointment.billing!.paidAmount} ${t.localeName == 'en' ? 'SYP' : 'ل.س'}",
+                  ),
                 if (appointment.billing!.paymentDate != null)
                   _InfoRow(
-                    "Paid On",
+                    t.paidOn,
                     _formatDate(appointment.billing!.paymentDate!),
                   ),
               ],
@@ -164,7 +180,7 @@ class _AppointmentDetailsBody extends StatelessWidget {
             Config.spaceSmall,
             _SectionCard(
               icon: Icons.medical_services_outlined,
-              title: "Prescriptions",
+              title: t.prescriptions,
               children: appointment.prescriptions!.map((p) {
                 return Container(
                   margin: const EdgeInsets.symmetric(vertical: 6),
@@ -184,7 +200,7 @@ class _AppointmentDetailsBody extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Issued: ${p.dateIssued.day}/${p.dateIssued.month}/${p.dateIssued.year}",
+                        "${t.issued}: ${p.dateIssued.day}/${p.dateIssued.month}/${p.dateIssued.year}",
                         style: textTheme.bodySmall?.copyWith(
                           color: labelColor.withOpacity(0.8),
                           fontWeight: FontWeight.w600,
@@ -195,7 +211,7 @@ class _AppointmentDetailsBody extends StatelessWidget {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: "Medications: ",
+                              text: "${t.medications}: ",
                               style: textTheme.bodyMedium?.copyWith(
                                 color: labelColor,
                                 fontWeight: FontWeight.bold,
@@ -217,7 +233,7 @@ class _AppointmentDetailsBody extends StatelessWidget {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: "Dosage: ",
+                              text: "${t.dosage}: ",
                               style: textTheme.bodySmall?.copyWith(
                                 color: labelColor.withOpacity(0.9),
                                 fontWeight: FontWeight.w600,
@@ -248,6 +264,24 @@ class _AppointmentDetailsBody extends StatelessWidget {
 
   String _formatDateTime(DateTime date) =>
       "${_formatDate(date)} ${date.hour}:${date.minute.toString().padLeft(2, '0')}";
+}
+
+String statusLocalized(String status, BuildContext context) {
+  final t = AppLocalizations.of(context)!;
+  switch (status.toLowerCase()) {
+    case "pending":
+      return t.appointmentStatusPending;
+    case "confirmed":
+      return t.appointmentStatusConfirmed;
+    case "completed":
+      return t.appointmentStatusCompleted;
+
+    case "cancelled":
+      return t.appointmentStatusCancelled;
+
+    default:
+      return '';
+  }
 }
 
 class _SectionCard extends StatelessWidget {

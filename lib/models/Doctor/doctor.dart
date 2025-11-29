@@ -54,8 +54,8 @@ class Doctor {
       specialization: normalized['Specialization'],
       age: normalized['Age'],
       avatar: normalized['Avatar'],
-      rating: (normalized["AverageRating"] as num?)?.toDouble() ?? 3.0,
-      totalRatings: normalized["TotalReviews"] ?? 171,
+      rating: (normalized["AverageRating"] as num?)?.toDouble(),
+      totalRatings: normalized["TotalReviews"] ,
       primaryEmail: normalized['PrimaryEmail'],
       primaryPhone: normalized['PrimaryPhone'],
       emails: (normalized['Emails'] as List<dynamic>?)

@@ -1,3 +1,4 @@
+import 'package:doctor_appointment_app/l10n/app_localizations.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -42,9 +43,7 @@ class FacilityMapPart extends ConsumerWidget {
                   width: double.infinity,
                   child: FlutterMap(
                     options: MapOptions(
-                      initialCenter: LatLng(
-                         lat, long
-                      ),
+                      initialCenter: LatLng(lat, long),
                       initialZoom: 16,
                       interactionOptions: const InteractionOptions(
                         flags: InteractiveFlag
@@ -60,10 +59,7 @@ class FacilityMapPart extends ConsumerWidget {
                       MarkerLayer(
                         markers: [
                           Marker(
-                            point: LatLng(
-                              lat,
-                              long
-                            ),
+                            point: LatLng(lat, long),
                             width: 40,
                             height: 40,
                             child: const Icon(
@@ -96,10 +92,10 @@ class FacilityMapPart extends ConsumerWidget {
                   FontAwesomeIcons.mapLocation,
                   color: Config.primaryColor,
                 ),
-                label: const Text(
+                label: Text(
                   // AppLocalizations.of(context)!.openInGoogleMaps,
-                  'get directions',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.getDirections,
+                  style:const TextStyle(
                     color: Config.primaryColor,
                     fontWeight: FontWeight.bold,
                   ),

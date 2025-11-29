@@ -1,7 +1,6 @@
 // lib/view/pages/main_layout.dart
 import 'dart:async';
 
-import 'package:dio/dio.dart';
 import 'package:doctor_appointment_app/l10n/app_localizations.dart';
 import 'package:doctor_appointment_app/models/Patient/patient.dart';
 import 'package:doctor_appointment_app/models/notification_model.dart';
@@ -24,52 +23,54 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+
 class MainLayout extends ConsumerWidget {
   const MainLayout({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final patientAsync = ref.watch(patientNotifier);
-
+    final notifier = ref.read(patientNotifier.notifier);
     return patientAsync.when(
       data: (patient) {
         if (patient == null) {
-          return const Scaffold(
-            body: Center(child: Loading()),
+          // If patient is null, it means either not logged in or token expired
+          return Scaffold(
+            body: Center(
+              child:notifier.isLoggingOut?const Loading(message: 'Signing out',): ErrorPopUp(
+                title: 'Session Expired',
+                content: 'Please sign in again',
+                buttonText: 'Sign in',
+                onOk: () async {
+                  await ref.read(patientNotifier.notifier).logout();
+                  Get.offAllNamed(Sroutes.auth);
+                },
+              ),
+            ),
           );
         }
 
-        // Wrap with SignalR connection widget
         return SignalRConnectionWidget(
           patient: patient,
           child: _MainLayoutContent(patient: patient),
         );
       },
+      loading: () => const Scaffold(body: Center(child: Loading())),
       error: (error, stackTrace) {
-        final bool isTokenInvalid =
-            (error as DioException).response?.statusCode == 401;
-
+        // This should only handle non-401 errors now
         return Scaffold(
           body: Center(
             child: ErrorPopUp(
-              title: 'Something Went Wrong',
-              content: 'Session is finished please Sign in again',
-              buttonText: isTokenInvalid ? 'Sign in' : 'Retry',
-              onOk: () async {
-                if (isTokenInvalid) {
-                  await ref.read(patientNotifier.notifier).logout();
-                  await Get.offAllNamed(Sroutes.auth);
-                } else {
-                  ref.invalidate(patientNotifier);
-                }
+              title: 'Connection Error',
+              content: 'Please check your connection and try again',
+              buttonText: 'Retry',
+              onOk: () {
+                ref.invalidate(patientNotifier);
               },
             ),
           ),
         );
       },
-      loading: () => const Scaffold(
-        body: Center(child: Loading()),
-      ),
     );
   }
 }
@@ -152,7 +153,6 @@ class __MainLayoutContentState extends State<_MainLayoutContent> {
     );
   }
 }
-
 
 class SignalRConnectionWidget extends ConsumerStatefulWidget {
   final Widget child;
@@ -256,7 +256,7 @@ class _SignalRConnectionWidgetState
     }
   }
 
-  void _handleIncomingNotification(NotificationModel notification) {
+  void _handleIncomingNotification(NotificationModel notification) async {
     // Triple safety check
     if (_isDisposed || !mounted) {
       LogService.w(
@@ -273,7 +273,8 @@ class _SignalRConnectionWidgetState
       // Refresh providers immediately
       ref.invalidate(notificationsProvider);
       ref.invalidate(unreadCountProvider);
-      ref.invalidate(appointmentsProvider);
+      ref.read(appointmentsProvider.notifier).status = null;
+      await ref.read(appointmentsProvider.notifier).refresh();
 
       LogService.w('✅ Providers refreshed immediately');
       _showNotificationPopup(notification);
@@ -281,6 +282,7 @@ class _SignalRConnectionWidgetState
       LogService.e('❌ Error handling notification', e);
     }
   }
+
   Future<void> _joinUserGroup(String userId) async {
     if (_isDisposed) return;
 

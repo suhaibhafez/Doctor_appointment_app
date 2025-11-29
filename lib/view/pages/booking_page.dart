@@ -1,4 +1,6 @@
 // Required imports
+import 'package:doctor_appointment_app/l10n/app_localizations.dart';
+
 import 'package:doctor_appointment_app/models/Doctor/doctor_capacity.dart';
 import 'package:doctor_appointment_app/models/Doctor/doctor_exception_schedule.dart';
 import 'package:doctor_appointment_app/models/Doctor/doctor_schedule.dart';
@@ -46,7 +48,7 @@ class _BookingPageState extends ConsumerState<BookingPage> {
 
   final String docId = Get.parameters['docId'] ?? '';
   final String facId = Get.parameters['facId'] ?? '';
-
+  final String appId = Get.parameters['appId'] ?? '';
   @override
   void initState() {
     _dateSelected = true;
@@ -64,7 +66,6 @@ class _BookingPageState extends ConsumerState<BookingPage> {
 
     return Scaffold(
       appBar: const CustomAppbar(
-        appTitle: 'Appointment',
         icon: FaIcon(Icons.arrow_back_ios),
       ),
       body: SafeArea(
@@ -86,7 +87,7 @@ class _BookingPageState extends ConsumerState<BookingPage> {
                             ),
                             child: Center(
                               child: Text(
-                                'Select Consultation Time',
+                                AppLocalizations.of(context)!.selectConsultationTime,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20,
@@ -120,7 +121,7 @@ class _BookingPageState extends ConsumerState<BookingPage> {
                                 ),
                               );
                             }
-
+                            //TODO Localize
                             // If any provider has error
                             if (scheduleAsync.hasError) {
                               return const SizedBox(
@@ -192,7 +193,7 @@ class _BookingPageState extends ConsumerState<BookingPage> {
               Button(
                 height: 48,
                 width: double.infinity,
-                title: 'Make Appointment',
+                title: AppLocalizations.of(context)!.makeAppointment,
                 disabled: !(_timeSelected && _dateSelected) || _isBooking,
                 onPressed: () async {
                   if (_selectedSlot == null) return;
@@ -207,32 +208,57 @@ class _BookingPageState extends ConsumerState<BookingPage> {
                     _isBooking = true;
                   });
                   // Call your AsyncNotifier (adjust provider name if different)
-                  await Get.showOverlay(
-                    asyncFunction: () async =>
-                        await appointmentsNotifier.addAppointment(
-                          docId,
-                          facId,
-                          scheduleDate,
-                          scheduleTime,
-                          capacityAsync.value!.sessionDurationMinutes,
-                        ),
+                 if (appId.isEmpty) {
+                    await Get.showOverlay(
+                      asyncFunction: () async =>
+                          await appointmentsNotifier.addAppointment(
+                            docId,
+                            facId,
+                            scheduleDate,
+                            scheduleTime,
+                            capacityAsync.value!.sessionDurationMinutes,
+                          ),
 
-                    loadingWidget: const Loading(),
-                  );
-                  setState(() {
-                    _isBooking = false;
-                  });
-                  final error = appointmentsNotifier.addingAppointmentError;
-                  if (error != null) {
-                    await Get.dialog(
-                      ErrorPopUp(
-                        title: 'Something went wrong',
-                        content: error.toString(),
-                      ),
+                      loadingWidget: const Loading(),
                     );
-                  } else {
-                    await Get.toNamed(Sroutes.successBooking);
-                  }
+                    setState(() {
+                      _isBooking = false;
+                    });
+                    final error = appointmentsNotifier.addingAppointmentError;
+                    if (error != null) {
+                      await Get.dialog(
+                        ErrorPopUp(
+                          title:
+                              'Sorry this time is already taken choose a different time.',
+                          content: error.toString(),
+                        ),
+                      );
+                    } else {
+                      await Get.toNamed(Sroutes.successBooking);
+                    }
+                 } else {
+                    await Get.showOverlay(
+                      asyncFunction: () async =>
+                          await appointmentsNotifier.reScheduleAppointment(id: appId, newDate: scheduleDate, newTime: scheduleTime),
+
+                      loadingWidget: const Loading(),
+                    );
+                    setState(() {
+                      _isBooking = false;
+                    });
+                    final error = appointmentsNotifier.rescheduleError;
+                    if (error != null) {
+                      await Get.dialog(
+                        ErrorPopUp(
+                          title:
+                              'Sorry this time is already taken choose a different time.',
+                          content: error.toString(),
+                        ),
+                      );
+                    } else {
+                      await Get.toNamed(Sroutes.successBooking);
+                    }
+                 }
 
                   // success UI
 
@@ -331,7 +357,7 @@ class _BookingPageState extends ConsumerState<BookingPage> {
   Widget _tableCalendar() {
     return TableCalendar(
       focusedDay: _focusDay,
-
+      
       firstDay: DateTime.now().add(const Duration(days: 1)),
       lastDay: DateTime(2025, 12, 31),
       locale: ref

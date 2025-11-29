@@ -32,7 +32,8 @@ class DoctorCard extends StatelessWidget {
           },
           child: Container(
             height: Config.screenHeight! * 0.2,
-            padding: const EdgeInsets.all(10),
+            width: double.infinity,
+            padding: const EdgeInsets.all(8),
             child: Container(
               decoration: BoxDecoration(
                 color: isDark ? Config.surfaceDark : Config.surfaceLight,
@@ -54,6 +55,7 @@ class DoctorCard extends StatelessWidget {
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
+                // mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   // Doctor image avatar
                   Hero(
@@ -69,16 +71,17 @@ class DoctorCard extends StatelessWidget {
                           width: 2,
                         ),
                         image: DecorationImage(
-                          image: NetworkImage(
-                            doctor.avatar == null || doctor.avatar!.isEmpty
-                                ? 'https://cdn-icons-png.flaticon.com/512/3774/3774299.png'
-                                : Config.getImageUrlForID(doctor.avatar!),
-                            headers: {
-                              if (doctor.avatar != null &&
-                                  doctor.avatar!.isNotEmpty)
-                                'ngrok-skip-browser-warning': '1',
-                            },
-                          ),
+                          image: doctor.avatar == null || doctor.avatar!.isEmpty
+                              ? const AssetImage(
+                                  'assets/dummyDoctor.png',
+                                )
+                              : NetworkImage(
+                                  //  'https://cdn-icons-png.flaticon.com/512/3774/3774299.png'
+                                  Config.getImageUrlForID(doctor.avatar!),
+                                  headers: {
+                                    'ngrok-skip-browser-warning': '1',
+                                  },
+                                ),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -98,7 +101,7 @@ class DoctorCard extends StatelessWidget {
                         children: [
                           // Doctor name
                           Text(
-                            'Dr. ${doctor.firstName} ${doctor.lastName}',
+                            '${AppLocalizations.of(context)!.dr} ${doctor.firstName} ${doctor.lastName}',
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.labelLarge!.copyWith(
                               fontSize: isSmall ? 15 : 17,
@@ -154,7 +157,7 @@ class DoctorCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                '${doctor.rating == 0.0 ? 3.0 : doctor.rating}',
+                                '${doctor.rating}',
                                 style: theme.textTheme.bodyMedium!.copyWith(
                                   fontSize: isSmall ? 12 : 13,
                                   fontWeight: FontWeight.w600,
@@ -167,7 +170,7 @@ class DoctorCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                '(${doctor.totalRatings == 0 ? 178 : doctor.totalRatings})',
+                                '(${doctor.totalRatings})',
                                 style: theme.textTheme.bodyMedium!.copyWith(
                                   fontSize: isSmall ? 11 : 13,
                                   color: Colors.grey,

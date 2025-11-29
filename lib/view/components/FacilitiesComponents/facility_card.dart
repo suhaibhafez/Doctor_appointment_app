@@ -1,3 +1,4 @@
+import 'package:doctor_appointment_app/l10n/app_localizations.dart';
 import 'package:doctor_appointment_app/routes/routes.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
 import 'package:doctor_appointment_app/utils/enums/specialitiez_facilities.dart';
@@ -164,7 +165,7 @@ class FacilityCard extends StatelessWidget {
                           '${Sroutes.facilityDetails}/${facility.id}',
                         );
                       },
-                      text: 'More',
+                      text: AppLocalizations.of(context)!.more,
                     ),
                   ),
                 ],

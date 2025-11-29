@@ -1,3 +1,4 @@
+import 'package:doctor_appointment_app/l10n/app_localizations.dart';
 import 'package:doctor_appointment_app/models/Appointment/appointment.dart';
 import 'package:doctor_appointment_app/models/Appointment/review.dart';
 import 'package:doctor_appointment_app/routes/routes.dart';
@@ -8,7 +9,9 @@ import 'package:doctor_appointment_app/utils/enums/specialitiez_facilities.dart'
 import 'package:doctor_appointment_app/view/components/Common/cool_button.dart';
 import 'package:doctor_appointment_app/view/components/Common/error_pop_up.dart';
 import 'package:doctor_appointment_app/view/components/Common/loading.dart';
+import 'package:doctor_appointment_app/view_model/Appointment/appointments.dart';
 import 'package:doctor_appointment_app/view_model/Appointment/review.dart';
+import 'package:doctor_appointment_app/view_model/notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
@@ -41,6 +44,29 @@ class AppointmentCard extends ConsumerWidget {
   // 🟦 Status badge
 
   // 🟧 Action buttons depending on status
+
+  bool _isWithinCancellationPeriod(Appointment appointment) {
+    try {
+      final appointmentDateTime = _parseAppointmentDateTime(appointment);
+      final now = DateTime.now();
+      return appointmentDateTime.difference(now).inHours > 24;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  DateTime _parseAppointmentDateTime(Appointment appointment) {
+    final timeParts = appointment.scheduledTime.split(':');
+    return DateTime(
+      appointment.scheduledDate.year,
+      appointment.scheduledDate.month,
+      appointment.scheduledDate.day,
+      int.parse(timeParts[0]),
+      int.parse(timeParts[1]),
+      int.parse(timeParts[2]),
+    );
+  }
+
   List<Widget> _actionButtons(BuildContext context) {
     final isPendingOrConfirmed = [
       "pending",
@@ -62,27 +88,91 @@ class AppointmentCard extends ConsumerWidget {
     if (isPendingOrConfirmed) {
       return [
         ElevatedButton(
-          onPressed: () {},
+          onPressed: _isWithinCancellationPeriod(appointment)
+              ? () async {
+                  await Get.dialog(
+                    CancelDialog(appointmentId: appointment.id),
+                    barrierDismissible: false,
+                  );
+                }
+              : null,
           style: buttonStyle.copyWith(
-            backgroundColor: WidgetStatePropertyAll(
-              Theme.of(context).colorScheme.error,
-            ),
+            backgroundColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) {
+                return Colors.grey.shade300; // Disabled background
+              }
+              return Theme.of(context).colorScheme.error; // Normal background
+            }),
+            foregroundColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) {
+                return Colors.grey.shade500; // Disabled text color
+              }
+              return Colors.white; // Normal text color
+            }),
+            overlayColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) {
+                return Colors.transparent; // No overlay when disabled
+              }
+              return Colors.white.withOpacity(0.1); // Normal overlay
+            }),
+            elevation: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) {
+                return 0; // No shadow when disabled
+              }
+              return 4; // Normal elevation
+            }),
           ),
-          child: const Text("Cancel"),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
-          onPressed: () {},
-          style: buttonStyle,
-          child: const Text(
-            "Reschedule",
+          onPressed: _isWithinCancellationPeriod(appointment) ? () async{
+             await Get.toNamed(
+                    Sroutes.bookingPage,
+                    parameters: {
+                      'docId': appointment.doctor.id,
+                      'facId': appointment.facility.id,
+                      'appId':appointment.id,
+                      
+                    },
+                  );
+
+          } : null,
+          style: buttonStyle.copyWith(
+            backgroundColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) {
+                return Colors.grey.shade300; // Disabled background
+              }
+              return Config.primaryColor; // Normal background
+            }),
+            foregroundColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) {
+                return Colors.grey.shade500; // Disabled text color
+              }
+              return Colors.white; // Normal text color
+            }),
+            overlayColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) {
+                return Colors.transparent; // No overlay when disabled
+              }
+              return Colors.white.withOpacity(0.1); // Normal overlay
+            }),
+            elevation: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) {
+                return 0; // No shadow when disabled
+              }
+              return 4; // Normal elevation
+            }),
+          ),
+          child: Text(
+            AppLocalizations.of(context)!.reschedule,
           ),
         ),
       ];
     } else if (isCompletedOrCancelled) {
       return [
         ElevatedButton(
-          onPressed: () async{
-              await Get.toNamed(
+          onPressed: () async {
+            await Get.toNamed(
               Sroutes.bookingPage,
               parameters: {
                 'docId': appointment.doctor.id,
@@ -91,7 +181,7 @@ class AppointmentCard extends ConsumerWidget {
             );
           },
           style: buttonStyle,
-          child: const Text("Rebook"),
+          child: Text(AppLocalizations.of(context)!.rebook),
         ),
       ];
     } else {
@@ -117,7 +207,7 @@ class AppointmentCard extends ConsumerWidget {
 
     return Card(
       elevation: 5,
-
+      margin: EdgeInsets.zero,
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
@@ -189,18 +279,34 @@ class AppointmentCard extends ConsumerWidget {
 
             // 🔘 Actions
             if (_actionButtons(context).isNotEmpty)
-              Row(
-                children: _actionButtons(context)
-                    .map(
-                      (btn) => Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: btn,
-                        ),
-                      ),
-                    )
-                    .toList(),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Row(
+                    children: _actionButtons(context)
+                        .map(
+                          (btn) => Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 8),
+                              child: btn,
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  const SizedBox(height: 4),
+                  if ([
+                    "pending",
+                    "confirmed",
+                  ].contains(appointment.status.toLowerCase()))
+                    const Text(
+                      'Note*:Cant cancel or reschedule within less than 24 hours',
+                      // textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey, fontSize: 9),
+                    ),
+                ],
               ),
+
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -214,7 +320,7 @@ class AppointmentCard extends ConsumerWidget {
                         barrierDismissible: false,
                       );
                     },
-                    label: const Text('Review'),
+                    label: Text(AppLocalizations.of(context)!.rate),
                     icon: const Icon(
                       Icons.star,
                       color: Colors.amberAccent,
@@ -227,7 +333,7 @@ class AppointmentCard extends ConsumerWidget {
                       '${Sroutes.appointmentDetails}/${appointment.id}',
                     );
                   },
-                  label: const Text('More info'),
+                  label: Text(AppLocalizations.of(context)!.moreInfo),
                   icon: const Icon(Icons.info_outline),
                   style: TextButton.styleFrom(
                     foregroundColor: theme.colorScheme.primary,
@@ -251,13 +357,31 @@ Widget statusChip(String status, BuildContext context) {
       border: Border.all(color: statusColor(status, context), width: 1),
     ),
     child: Text(
-      status,
+      statusLocalized(status, context),
       style: TextStyle(
         color: statusColor(status, context),
         fontWeight: FontWeight.w600,
       ),
     ),
   );
+}
+
+String statusLocalized(String status, BuildContext context) {
+  final t = AppLocalizations.of(context)!;
+  switch (status.toLowerCase()) {
+    case "pending":
+      return t.appointmentStatusPending;
+    case "confirmed":
+      return t.appointmentStatusConfirmed;
+    case "completed":
+      return t.appointmentStatusCompleted;
+
+    case "cancelled":
+      return t.appointmentStatusCancelled;
+
+    default:
+      return '';
+  }
 }
 
 Color statusColor(String status, BuildContext context) {
@@ -530,6 +654,168 @@ class _RatingFormState extends ConsumerState<_RatingForm> {
                   ],
                 ),
         ],
+      ),
+    );
+  }
+}
+
+class CancelDialog extends StatelessWidget {
+  final String appointmentId;
+
+  const CancelDialog({super.key, required this.appointmentId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: _CancelForm(appointmentId: appointmentId),
+      ),
+    );
+  }
+}
+
+class _CancelForm extends ConsumerStatefulWidget {
+  final String appointmentId;
+
+  const _CancelForm({required this.appointmentId});
+
+  @override
+  ConsumerState<_CancelForm> createState() => _CancelFormState();
+}
+
+class _CancelFormState extends ConsumerState<_CancelForm> {
+  final TextEditingController commentCtrl = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  bool submitting = false;
+  @override
+  void dispose() {
+    commentCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> submit() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    final appointmentNotifier = ref.read(appointmentsProvider.notifier);
+
+    if (_formKey.currentState!.validate()) {
+      await appointmentNotifier.cancelAppointment(
+        widget.appointmentId,
+        commentCtrl.text,
+      );
+      // if (Get.isSnackbarOpen) {
+      //   await Get.closeCurrentSnackbar();
+      // }
+      Get.focusScope?.unfocus();
+      if (appointmentNotifier.cacellingError == null) {
+        Get.back();
+
+        if (!ref.read(signalRServiceProvider).isConnected) {
+          Get.snackbar(
+            "Success",
+            "Cancelled Appointment",
+            backgroundColor: Config.accentColor,
+            colorText: Colors.white,
+          );
+        }
+      } else {
+        Get.snackbar(
+          "Failed",
+          'Please check your interet connection ',
+          backgroundColor: Config.errorColor,
+          colorText: Colors.white,
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Config().init(context);
+    ref.watch(appointmentsProvider);
+    final appointmentNotifier = ref.read(appointmentsProvider.notifier);
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      behavior: HitTestBehavior.translucent,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Cancel Appointment",
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            Config.spaceSmall,
+
+            // ⭐ Rating stars
+            Config.spaceSmall,
+
+            // 💬 Comment
+            TextFormField(
+              controller: commentCtrl,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: "Reason",
+                hintText: '',
+                alignLabelWithHint: true,
+                labelStyle: TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Reason is required';
+                }
+
+                return null;
+              },
+            ),
+
+            Config.spaceSmall,
+
+            appointmentNotifier.isCancelling
+                ? const CircularProgressIndicator()
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    spacing: 10,
+                    children: [
+                      Expanded(
+                        child: CoolButton(
+                          isSmall: Config.screenWidth! < 360,
+                          onclick: () async {
+                            FocusScope.of(context).unfocus();
+
+                            if (Get.isSnackbarOpen) {
+                              // await Get.closeCurrentSnackbar();
+                              Get.back();
+                            }
+                            if (Get.isDialogOpen == true) {
+                              Get.back(); // close the dialog
+                            }
+                          },
+                          text: 'Cancel',
+                        ),
+                      ),
+
+                      Expanded(
+                        child: CoolButton(
+                          onclick: () async {
+                            await submit();
+                          },
+                          text: 'Confirm',
+                          isSmall: Config.screenWidth! < 360,
+                          backgroundColor: Colors.redAccent,
+                        ),
+                      ),
+                    ],
+                  ),
+          ],
+        ),
       ),
     );
   }

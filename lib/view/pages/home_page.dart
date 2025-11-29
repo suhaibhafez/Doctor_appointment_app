@@ -1,3 +1,4 @@
+import 'package:doctor_appointment_app/l10n/app_localizations.dart';
 import 'package:doctor_appointment_app/models/Patient/patient.dart';
 import 'package:doctor_appointment_app/models/notification_model.dart';
 import 'package:doctor_appointment_app/routes/routes.dart';
@@ -10,6 +11,7 @@ import 'package:doctor_appointment_app/view/components/Common/shimmer.dart';
 import 'package:doctor_appointment_app/view/components/DoctorsComponents/doctor_card.dart';
 import 'package:doctor_appointment_app/view_model/Appointment/appointments_today.dart';
 import 'package:doctor_appointment_app/view_model/Doctor/doctors.dart';
+import 'package:doctor_appointment_app/view_model/Doctor/top_doctors.dart';
 
 import 'package:doctor_appointment_app/view_model/notification.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +53,7 @@ class HomePage extends ConsumerWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        "Shifa",
+                        "SHIFA",
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w700,
@@ -106,181 +108,141 @@ class HomePage extends ConsumerWidget {
               ),
 
               Expanded(
-                child: NotificationListener<ScrollNotification>(
-                  onNotification: (scrollInfo) {
-                    // Handle infinite scrolling for doctors here
-                    if (scrollInfo.metrics.pixels >=
-                        scrollInfo.metrics.maxScrollExtent - 200) {
-                      final notifier = ref.read(doctorProvider(null).notifier);
-                      if (!notifier.isLoadingMore &&
-                          !notifier.isLastPage &&
-                          notifier.loadMoreError == null) {
-                        notifier.loadMore();
-                      }
-                    }
-                    return false;
-                  },
-                  child: CustomScrollView(
-                    slivers: [
-                      // Today's Appointments
-                      SliverToBoxAdapter(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Today\'s Appointments',
-                              style: Theme.of(context).textTheme.headlineSmall,
-                            ),
-                            const AppointmentsTodayList(),
-                            const SizedBox(height: 24),
-                          ],
-                        ),
-                      ),
+                child: CustomScrollView(
+                  slivers: [
+                    // Today's Appointments
+                    SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.todaysAppointments,
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                          const SizedBox(height: 24),
 
-                      // Specialities Section
-                      SliverToBoxAdapter(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Explore Specialities',
-                              style: Theme.of(context).textTheme.headlineSmall,
-                            ),
-                            const SizedBox(
-                              height: 80,
-                              child: SpecialitiesList(),
-                            ),
-                            const SizedBox(height: 24),
-                          ],
-                        ),
+                          const AppointmentsTodayList(),
+                          const SizedBox(height: 24),
+                        ],
                       ),
+                    ),
 
-                      // Facilities Section
-                      SliverToBoxAdapter(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Explore Facilities',
-                              style: Theme.of(context).textTheme.headlineSmall,
-                            ),
-                            const SizedBox(
-                              height: 80,
-                              child: FacilitiesList(),
-                            ),
-                            const SizedBox(height: 24),
-                          ],
-                        ),
+                    // Specialities Section
+                    SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.exploreSpecialities,
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                          const SizedBox(
+                            height: 80,
+                            child: SpecialitiesList(),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
                       ),
+                    ),
 
-                      // Top Doctors Section
-                      SliverToBoxAdapter(
-                        child: Text(
-                          'Top Doctors',
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
+                    // Facilities Section
+                    SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.exploreFacilities,
+
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                          const SizedBox(
+                            height: 80,
+                            child: FacilitiesList(),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
                       ),
+                    ),
 
-                      // Doctors List as SliverList
-                      Consumer(
-                        builder: (context, ref, child) {
-                          final doctorsState = ref.watch(doctorProvider(null));
-                          return doctorsState.when(
-                            data: (doctors) {
-                              if (doctors.isEmpty) {
-                                return const SliverToBoxAdapter(
-                                  child: Center(
-                                    child: Text('No doctors found'),
+                    // Top Doctors Section
+                    SliverToBoxAdapter(
+                      child: Text(
+                        AppLocalizations.of(context)!.topDoctors,
+
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                    ),
+
+                    // Doctors List as SliverList
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final doctorsState = ref.watch(topDoctorsProvider);
+                        return doctorsState.when(
+                          data: (doctors) {
+                            if (doctors.isEmpty) {
+                              return SliverToBoxAdapter(
+                                child: Center(
+                                  child: Text(
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.noDoctorsFound,
                                   ),
-                                );
-                              }
-
-                              final notifier = ref.read(
-                                doctorProvider(null).notifier,
-                              );
-                              return SliverList(
-                                delegate: SliverChildBuilderDelegate(
-                                  (context, index) {
-                                    if (index < doctors.length) {
-                                      return DoctorCard(doctor: doctors[index]);
-                                    }
-
-                                    // Loading more indicator
-                                    if (notifier.isLoadingMore) {
-                                      return const Center(
-                                        child: Padding(
-                                          padding: EdgeInsets.all(12),
-                                          child: CircularProgressIndicator(),
-                                        ),
-                                      );
-                                    }
-
-                                    // Error state
-                                    if (notifier.loadMoreError != null) {
-                                      return CoolButton(
-                                        onclick: () async =>
-                                            await notifier.loadMore(),
-                                        text: "اعادة المحاولة",
-                                        icon: const Icon(
-                                          Icons.refresh,
-                                          color: Colors.white,
-                                        ),
-                                        alignment: Alignment.center,
-                                        isSmall:
-                                            MediaQuery.of(context).size.width >
-                                            360,
-                                      );
-                                    }
-
-                                    // End of list
-                                    if (notifier.isLastPage) {
-                                      return const Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                          vertical: 10,
-                                        ),
-                                        child: Divider(
-                                          color: Config.primaryColor,
-                                          height: 2,
-                                        ),
-                                      );
-                                    }
-
-                                    return const SizedBox.shrink();
-                                  },
-                                  childCount:
-                                      doctors.length +
-                                      (notifier.isLoadingMore ||
-                                              notifier.isLastPage ||
-                                              notifier.loadMoreError != null
-                                          ? 1
-                                          : 0),
                                 ),
                               );
-                            },
-                            loading: () => SliverList(
+                            }
+
+                            return SliverList(
                               delegate: SliverChildBuilderDelegate(
-                                (context, index) => const ShimmerDoctorCard(),
-                                childCount: 10,
+                                (context, index) {
+                                  if (index < doctors.length) {
+                                    return DoctorCard(doctor: doctors[index]);
+                                  } else {
+                                    return const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 10,
+                                      ),
+                                      child: Divider(
+                                        color: Config.primaryColor,
+                                        height: 2,
+                                      ),
+                                    );
+                                  }
+                                  // Loading more indicator
+
+                                  // End of list
+                                },
+                                childCount: doctors.length + 1,
+                              ),
+                            );
+                          },
+                          loading: () => SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) => const ShimmerDoctorCard(),
+                              childCount: 3,
+                            ),
+                          ),
+
+                          //TODO Localize
+                          error: (err, _) => SliverToBoxAdapter(
+                            child: Center(
+                              child: ErrorPopUp(
+                                title: 'Something went wrong',
+                                content: err.toString(),
+                                buttonText: AppLocalizations.of(
+                                  context,
+                                )!.retry,
+
+                                onOk: () async => await ref
+                                    .read(doctorProvider(null).notifier)
+                                    .refresh(),
                               ),
                             ),
-                            error: (err, _) => SliverToBoxAdapter(
-                              child: Center(
-                                child: ErrorPopUp(
-                                  title: 'Something went wrong',
-                                  content: err.toString(),
-                                  buttonText: 'Retry',
-                                  onOk: () async => await ref
-                                      .read(doctorProvider(null).notifier)
-                                      .refresh(),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -384,7 +346,9 @@ class _AppointmentsTodayListState extends ConsumerState<AppointmentsTodayList> {
             /// Wrap PageView in SizedBox   so height is determined by the CARD,
             /// not infinite page view.
             SizedBox(
-              height: 315,
+              height: 310,
+
+              // width: double.infinity,
               child: PageView.builder(
                 controller: _controller,
                 physics: const BouncingScrollPhysics(),
@@ -513,6 +477,7 @@ class NoAppointmentsCard extends StatelessWidget {
             color: Config.primaryColor,
           ),
           const SizedBox(height: 12),
+          //TODO Localize
           Text(
             'No Appointments Today',
             textAlign: TextAlign.center,
@@ -523,6 +488,8 @@ class NoAppointmentsCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
+
+          //TODO Localize
           Text(
             'You’re all caught up for the day!',
             textAlign: TextAlign.center,
@@ -916,3 +883,135 @@ class _NotificationItem extends StatelessWidget {
     return '${date.day}/${date.month}/${date.year}';
   }
 }
+
+
+
+
+
+//  NotificationListener<ScrollNotification>(
+//                   onNotification: (scrollInfo) {
+//                     // Handle infinite scrolling for doctors here
+//                     if (scrollInfo.metrics.pixels >=
+//                         scrollInfo.metrics.maxScrollExtent - 200) {
+//                       final notifier = ref.read(doctorProvider(null).notifier);
+//                       if (!notifier.isLoadingMore &&
+//                           !notifier.isLastPage &&
+//                           notifier.loadMoreError == null) {
+//                         notifier.loadMore();
+//                       }
+//                     }
+//                     return false;
+//                   },)
+
+
+
+
+//  Consumer(
+//                         builder: (context, ref, child) {
+//                           final doctorsState = ref.watch(doctorProvider(null));
+//                           return doctorsState.when(
+//                             data: (doctors) {
+//                               if (doctors.isEmpty) {
+//                                 return SliverToBoxAdapter(
+//                                   child: Center(
+//                                     child: Text(
+//                                       AppLocalizations.of(
+//                                         context,
+//                                       )!.noDoctorsFound,
+//                                     ),
+//                                   ),
+//                                 );
+//                               }
+
+//                               final notifier = ref.read(
+//                                 doctorProvider(null).notifier,
+//                               );
+//                               return SliverList(
+//                                 delegate: SliverChildBuilderDelegate(
+//                                   (context, index) {
+//                                     if (index < doctors.length) {
+//                                       return DoctorCard(doctor: doctors[index]);
+//                                     }
+
+//                                     // Loading more indicator
+//                                     if (notifier.isLoadingMore) {
+//                                       return const Center(
+//                                         child: Padding(
+//                                           padding: EdgeInsets.all(12),
+//                                           child: CircularProgressIndicator(),
+//                                         ),
+//                                       );
+//                                     }
+
+//                                     // Error state
+//                                     if (notifier.loadMoreError != null) {
+//                                       return CoolButton(
+//                                         onclick: () async =>
+//                                             await notifier.loadMore(),
+//                                         text: AppLocalizations.of(
+//                                           context,
+//                                         )!.retry,
+//                                         icon: const Icon(
+//                                           Icons.refresh,
+//                                           color: Colors.white,
+//                                         ),
+//                                         alignment: Alignment.center,
+//                                         isSmall:
+//                                             MediaQuery.of(context).size.width >
+//                                             360,
+//                                       );
+//                                     }
+
+//                                     // End of list
+//                                     if (notifier.isLastPage) {
+//                                       return const Padding(
+//                                         padding: EdgeInsets.symmetric(
+//                                           horizontal: 16,
+//                                           vertical: 10,
+//                                         ),
+//                                         child: Divider(
+//                                           color: Config.primaryColor,
+//                                           height: 2,
+//                                         ),
+//                                       );
+//                                     }
+
+//                                     return const SizedBox.shrink();
+//                                   },
+//                                   childCount:
+//                                       doctors.length +
+//                                       (notifier.isLoadingMore ||
+//                                               notifier.isLastPage ||
+//                                               notifier.loadMoreError != null
+//                                           ? 1
+//                                           : 0),
+//                                 ),
+//                               );
+//                             },
+//                             loading: () => SliverList(
+//                               delegate: SliverChildBuilderDelegate(
+//                                 (context, index) => const ShimmerDoctorCard(),
+//                                 childCount: 3,
+//                               ),
+//                             ),
+
+//                             //TODO Localize
+//                             error: (err, _) => SliverToBoxAdapter(
+//                               child: Center(
+//                                 child: ErrorPopUp(
+//                                   title: 'Something went wrong',
+//                                   content: err.toString(),
+//                                   buttonText: AppLocalizations.of(
+//                                     context,
+//                                   )!.retry,
+
+//                                   onOk: () async => await ref
+//                                       .read(doctorProvider(null).notifier)
+//                                       .refresh(),
+//                                 ),
+//                               ),
+//                             ),
+//                           );
+//                         },
+//                       ),
+                    

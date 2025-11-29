@@ -191,7 +191,7 @@ class DoctorSearchState extends ConsumerState<DoctorSearch> {
             child: doctorsState.when(
               data: (doctors) {
                 return doctors.isEmpty
-                    ? const Center(child: Text('No doctors found'))
+                    ?  Center(child: Text(AppLocalizations.of(context)!.noDoctorsFound))
                     : NotificationListener<ScrollNotification>(
                         onNotification: (scrollInfo) {
                           if (scrollInfo.metrics.pixels >=

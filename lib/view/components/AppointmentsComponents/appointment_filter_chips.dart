@@ -1,6 +1,6 @@
+import 'package:doctor_appointment_app/l10n/app_localizations.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
 import 'package:flutter/material.dart';
-
 
 class AppointmentFilterChips extends StatelessWidget {
   final int? selectedStatus;
@@ -21,11 +21,26 @@ class AppointmentFilterChips extends StatelessWidget {
 
     // Define filter options
     final filters = <Map<String, dynamic>>[
-      {'label': 'All', 'value': null},
-      {'label': 'Pending', 'value': 1},
-      {'label': 'Confirmed', 'value': 2},
-      {'label': 'Completed', 'value': 3},
-      {'label': 'Cancelled', 'value': 4},
+      {
+        'label': AppLocalizations.of(context)!.appointmentStatusAll,
+        'value': null,
+      },
+      {
+        'label': AppLocalizations.of(context)!.appointmentStatusPending,
+        'value': 1,
+      },
+      {
+        'label': AppLocalizations.of(context)!.appointmentStatusConfirmed,
+        'value': 2,
+      },
+      {
+        'label': AppLocalizations.of(context)!.appointmentStatusCompleted,
+        'value': 3,
+      },
+      {
+        'label': AppLocalizations.of(context)!.appointmentStatusCancelled,
+        'value': 4,
+      },
     ];
 
     return Container(
@@ -71,7 +86,6 @@ class AppointmentFilterChips extends StatelessWidget {
             );
           }).toList(),
         ),
-     
       ),
     );
   }

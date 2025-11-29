@@ -1,3 +1,5 @@
+import 'package:doctor_appointment_app/utils/config.dart';
+
 class FacilityUpload {
   final String id;
   final String facilityId;
@@ -42,6 +44,6 @@ class FacilityUpload {
   }
 
   String getUploadUrl() {
-    return 'https://unlugubriously-balsamy-ward.ngrok-free.dev/api/health-care-facilities/$facilityId/uploads/$id';
+    return '${Config.baseUrl}/api/health-care-facilities/$facilityId/uploads/$id';
   }
 }

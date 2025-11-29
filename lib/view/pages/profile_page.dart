@@ -23,7 +23,7 @@ import "package:get/route_manager.dart";
 import "package:intl/intl.dart";
 
 class ProfilePage extends ConsumerWidget {
-  const ProfilePage({super.key,required this.patient});
+  const ProfilePage({super.key, required this.patient});
   final Patient patient;
 
   void handleAsyncState<T>(
@@ -74,16 +74,16 @@ class ProfilePage extends ConsumerWidget {
           ref.invalidate(allergiesProvider);
           ref.invalidate(settingsProvider);
         },
-        child:  SingleChildScrollView(
-          padding:const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               PatientDetailsSection(
                 patient: patient,
               ),
-             const SizedBox(height: 10),
-            const  SettingsSection(),
+              const SizedBox(height: 10),
+              const SettingsSection(),
             ],
           ),
         ),
@@ -102,7 +102,7 @@ class PatientDetailsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
-
+    final t = AppLocalizations.of(context)!;
     return LayoutBuilder(
       builder: (context, constraints) {
         final isSmall = constraints.maxWidth < 360;
@@ -175,7 +175,7 @@ class PatientDetailsSection extends ConsumerWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            patient.gender!,
+                            patient.gender! == 'Female' ? t.female : t.male,
                             style: textTheme.bodyMedium,
                           ),
                         ],
@@ -193,7 +193,7 @@ class PatientDetailsSection extends ConsumerWidget {
                 const SizedBox(height: 25),
                 // --- Chronic diseases & allergies (dummy chips) ---
                 Text(
-                  'Chronic Diseases',
+                  t.chronicDiseases,
                   style: textTheme.labelLarge,
                 ),
                 const SizedBox(height: 8),
@@ -201,7 +201,7 @@ class PatientDetailsSection extends ConsumerWidget {
                 const SizedBox(height: 16),
 
                 Text(
-                  'Allergies',
+                  t.allergies,
                   style: textTheme.labelLarge,
                 ),
                 const SizedBox(height: 8),
@@ -223,7 +223,7 @@ class PatientDetailsSection extends ConsumerWidget {
                         onclick: () async {
                           await Get.toNamed(Sroutes.medicalRecordPage);
                         },
-                        text: "Medical History",
+                        text: t.medicalHistory,
                         icon: const Icon(Icons.history, size: 20),
                       ),
                     ),
@@ -237,7 +237,7 @@ class PatientDetailsSection extends ConsumerWidget {
                           Icons.receipt_long,
                           size: 20,
                         ),
-                        text: 'Billings',
+                        text: t.billings,
                       ),
                     ),
                   ],
@@ -386,7 +386,6 @@ class SettingsSection extends ConsumerWidget {
                     onclick: () async {
                       await ref.read(patientNotifier.notifier).logout();
                       await Get.offAllNamed(Sroutes.auth);
-
                     },
                     icon: const Icon(
                       Icons.logout_outlined,
@@ -480,12 +479,6 @@ class ChronicDiseaseSection extends ConsumerWidget {
                 ),
               ),
 
-              Text(
-                'Add Chronic Diseases',
-                style: theme.textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 16),
-
               if (availableDiseases.isEmpty)
                 Padding(
                   padding: const EdgeInsets.all(12.0),
@@ -517,7 +510,7 @@ class ChronicDiseaseSection extends ConsumerWidget {
                               color: Color(0xFF53C1B0),
                             ),
                             title: Text(
-                              disease.name,
+                              getLocalizedChronicDisease(context, disease.name),
                               style: theme.textTheme.bodyLarge,
                             ),
                             trailing: AnimatedSwitcher(
@@ -568,7 +561,7 @@ class ChronicDiseaseSection extends ConsumerWidget {
                         Get.back();
                       },
 
-                      text: 'Cancel',
+                      text: AppLocalizations.of(context)!.cancel,
                       backgroundColor: theme.colorScheme.surface,
                       forGroundColor: theme.colorScheme.error,
                       borderColor: theme.colorScheme.error.withAlpha(110),
@@ -593,7 +586,7 @@ class ChronicDiseaseSection extends ConsumerWidget {
                                     ),
                                   );
                                 },
-                          text: 'Add Selected',
+                          text: AppLocalizations.of(context)!.add,
                         );
                       },
                     ),
@@ -629,7 +622,7 @@ class ChronicDiseaseSection extends ConsumerWidget {
             ...chronicDiseases.map(
               (e) => Chip(
                 label: Text(
-                  e.name,
+                  getLocalizedChronicDisease(context, e.name),
                   overflow: TextOverflow.ellipsis,
                 ),
                 deleteIcon: Icon(
@@ -660,7 +653,7 @@ class ChronicDiseaseSection extends ConsumerWidget {
               ),
             ),
             ActionChip(
-              label: const Text('Add +'),
+              label: Text('${AppLocalizations.of(context)!.add} +'),
               labelStyle: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w500,
@@ -743,12 +736,6 @@ class AllergySection extends ConsumerWidget {
                 ),
               ),
 
-              Text(
-                'Add  Allergies',
-                style: theme.textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 16),
-
               if (availableAllergies.isEmpty)
                 Padding(
                   padding: const EdgeInsets.all(12.0),
@@ -780,7 +767,7 @@ class AllergySection extends ConsumerWidget {
                               color: Colors.amber,
                             ),
                             title: Text(
-                              disease.name,
+                              getLocalizedAllergy(context, disease.name),
                               style: theme.textTheme.bodyLarge,
                             ),
                             trailing: AnimatedSwitcher(
@@ -832,7 +819,7 @@ class AllergySection extends ConsumerWidget {
                         Get.back();
                       },
 
-                      text: 'Cancel',
+                      text: AppLocalizations.of(context)!.cancel,
                       backgroundColor: theme.colorScheme.surface,
                       forGroundColor: theme.colorScheme.error,
                       borderColor: theme.colorScheme.error.withAlpha(110),
@@ -857,7 +844,7 @@ class AllergySection extends ConsumerWidget {
                                     ),
                                   );
                                 },
-                          text: 'Add Selected',
+                          text: AppLocalizations.of(context)!.add,
                         );
                       },
                     ),
@@ -894,7 +881,7 @@ class AllergySection extends ConsumerWidget {
             ...allergies.map(
               (e) => Chip(
                 label: Text(
-                  e.name,
+                  getLocalizedAllergy(context, e.name),
                   overflow: TextOverflow.ellipsis,
                 ),
                 deleteIcon: Icon(
@@ -925,7 +912,7 @@ class AllergySection extends ConsumerWidget {
               ),
             ),
             ActionChip(
-              label: const Text('Add +'),
+              label: Text('${AppLocalizations.of(context)!.add} +'),
               labelStyle: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w500,

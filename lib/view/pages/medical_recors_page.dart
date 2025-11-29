@@ -1,3 +1,4 @@
+import 'package:doctor_appointment_app/l10n/app_localizations.dart';
 import 'package:doctor_appointment_app/models/Patient/medical_record.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
 import 'package:doctor_appointment_app/view/components/Common/custom_appbar.dart';
@@ -18,9 +19,9 @@ class MedicalRecorsPage extends ConsumerWidget {
     final medicalRecordsState = ref.watch(medicalRecordsProvider);
 
     return Scaffold(
-      appBar: const CustomAppbar(
-        appTitle: 'Medical Records',
-        icon: FaIcon(Icons.arrow_back_ios),
+      appBar:  CustomAppbar(
+        appTitle: AppLocalizations.of(context)!.medicalHistory,
+        icon:const FaIcon(Icons.arrow_back_ios),
       ),
       body: SafeArea(
         child: Padding(
@@ -56,7 +57,7 @@ class MedicalRecordCard extends StatelessWidget {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final isDark = theme.brightness == Brightness.dark;
-
+    final t = AppLocalizations.of(context)!;
     Color accent = Config.primaryColor;
     Color surface = theme.cardTheme.color ?? Colors.white;
     Color labelColor = isDark ? Colors.white70 : Colors.black87;
@@ -120,7 +121,7 @@ class MedicalRecordCard extends StatelessWidget {
             // 🔹 Diagnosis
             _section(
               context,
-              title: "Diagnosis",
+              title: t.localeName == 'en' ? 'Diagnosis' : 'التشخيص',
 
               content: record.diagnosis,
             ),
@@ -128,7 +129,7 @@ class MedicalRecordCard extends StatelessWidget {
             // 🔹 Treatment Notes
             _section(
               context,
-              title: "Treatment Notes",
+              title: t.localeName == 'en' ? "Treatment Notes" : 'ملاحظات',
 
               content: record.treatmentNotes,
             ),
@@ -136,7 +137,9 @@ class MedicalRecordCard extends StatelessWidget {
             // 🔹 Follow-up
             _section(
               context,
-              title: "Follow-Up Instructions",
+              title: t.localeName == 'en'
+                  ? "Follow-Up Instructions"
+                  : 'تعليمات المتابعة',
 
               content: record.followUpInstructions,
             ),
@@ -144,13 +147,12 @@ class MedicalRecordCard extends StatelessWidget {
             const SizedBox(height: 6),
 
             // 🔹 Scheduled Date & Time
-            _section(
-              context,
-              title: 'Appointment',
-              content:
-                  " ${record.scheduledDate.day}/${record.scheduledDate.month}/${record.scheduledDate.year} at ${record.scheduledTime}",
-            ),
-
+            // _section(
+            //   context,
+            //   title: t.localeName == 'en' ? 'Appointment' : 'الموعد',
+            //   content:
+            //       " ${record.scheduledDate.day}/${record.scheduledDate.month}/${record.scheduledDate.year}\n at ${record.scheduledTime}",
+            // ),
             const SizedBox(height: 14),
 
             // 🔹 Prescriptions
@@ -159,7 +161,7 @@ class MedicalRecordCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Prescriptions",
+                    t.prescriptions,
                     style: textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: accent,
@@ -185,7 +187,7 @@ class MedicalRecordCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Issued: ${p.dateIssued.day}/${p.dateIssued.month}/${p.dateIssued.year}",
+                            " ${t.issued}: ${p.dateIssued.day}/${p.dateIssued.month}/${p.dateIssued.year}",
                             style: textTheme.bodySmall?.copyWith(
                               color: labelColor.withOpacity(0.8),
                               fontWeight: FontWeight.w600,
@@ -193,10 +195,12 @@ class MedicalRecordCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           RichText(
+                            textAlign: TextAlign.left,
+
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text: "Medications: ",
+                                  text: "${t.medications}: ",
                                   style: textTheme.bodyMedium?.copyWith(
                                     color: labelColor,
                                     fontWeight: FontWeight.bold,
@@ -212,13 +216,16 @@ class MedicalRecordCard extends StatelessWidget {
                               ],
                             ),
                           ),
-                       
+
                           const SizedBox(height: 8),
                           RichText(
+                            textAlign: TextAlign.left,
+
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text: "Dosage: ",
+                                  text: "${t.dosage}: ",
+
                                   style: textTheme.bodySmall?.copyWith(
                                     color: labelColor.withOpacity(0.9),
                                     fontWeight: FontWeight.w600,
@@ -275,6 +282,7 @@ class MedicalRecordCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             content.isNotEmpty ? content : "No data provided.",
+            textAlign: TextAlign.left,
             style: TextStyle(color: textColor.withOpacity(0.9), height: 1.4),
           ),
         ],

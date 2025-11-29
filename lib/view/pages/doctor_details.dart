@@ -150,10 +150,17 @@ class AboutDoctor extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: Config.primaryColor, width: 2),
               image: DecorationImage(
-                image: NetworkImage(
-                  doctor.avatar == null || doctor.avatar!.isEmpty ?
-                  'https://cdn-icons-png.flaticon.com/512/3774/3774299.png'
-                  : Config.getImageUrlForID(doctor.avatar!),
+                image: doctor.avatar == null || doctor.avatar!.isEmpty
+                      ? const AssetImage(
+                        'assets/dummyDoctor.png',
+                      )
+                    : NetworkImage(
+                  
+                       Config.getImageUrlForID(doctor.avatar!),
+                       headers: {
+                    
+                      'ngrok-skip-browser-warning': '1',
+                  },
                 ),
                 fit: BoxFit.cover,
               ),
@@ -230,7 +237,7 @@ class AboutDoctor extends StatelessWidget {
               ),
               child: Text(
                 doctor.description!,
-
+                textAlign: TextAlign.left,
                 style: theme.textTheme.bodyMedium!.copyWith(
                   height: 1.5,
                   fontSize: 14,
@@ -282,7 +289,7 @@ class DoctorContactSection extends StatelessWidget {
           children: [
             const Icon(Icons.mail_outline),
             Text(
-              "Contacts",
+              AppLocalizations.of(context)!.contacts,
               style: theme.textTheme.headlineSmall!.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -297,7 +304,7 @@ class DoctorContactSection extends StatelessWidget {
             const SizedBox(height: 12),
 
             Text(
-              "Emails",
+              AppLocalizations.of(context)!.emails,
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -367,9 +374,9 @@ class DoctorContactSection extends StatelessWidget {
                       ),
                       onPressed: () async => await launchEmail(e.email),
                       icon: const Icon(Icons.email_outlined, size: 16),
-                      label: const Text(
-                        "Send",
-                        style: TextStyle(
+                      label: Text(
+                        AppLocalizations.of(context)!.send,
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
@@ -386,7 +393,7 @@ class DoctorContactSection extends StatelessWidget {
             const SizedBox(height: 16),
 
             Text(
-              "Phone Numbers",
+              AppLocalizations.of(context)!.phoneNumbers,
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -553,6 +560,7 @@ class DoctorScheduleSection extends ConsumerWidget {
 
     return scheduleAsync.when(
       loading: () => const SizedBox.shrink(),
+      //TODO Localize
       error: (err, stack) => Text(
         'Failed to load schedule',
         style: theme.textTheme.bodyLarge!.copyWith(color: Colors.red),
@@ -583,7 +591,7 @@ class DoctorScheduleSection extends ConsumerWidget {
               children: [
                 const Icon(FontAwesomeIcons.solidCalendarCheck),
                 Text(
-                  "Schedules",
+                  AppLocalizations.of(context)!.schedule,
                   style: theme.textTheme.headlineSmall!.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -659,6 +667,7 @@ class DoctorExceptionScheduleSection extends ConsumerWidget {
 
     return scheduleAsync.when(
       loading: () => const SizedBox.shrink(),
+      //TODO localize
       error: (err, stack) => Text(
         'Failed to load schedule',
         style: theme.textTheme.bodyLarge!.copyWith(color: Colors.red),
@@ -679,6 +688,7 @@ class DoctorExceptionScheduleSection extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            //TODO localize
             const Text(
               '*note:doctor doesnt work at this time',
               style: TextStyle(

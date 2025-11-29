@@ -40,7 +40,30 @@ class DoctorService {
     final doctors = data.map((e) => Doctor.fromDoctorApi(e)).toList();
     return doctors;
   }
+static Future<List<Doctor>> getTopDoctors(
+   {
+  required  Ref ref,
+  required  int page,
+   required int pageSize,
+  }
+    
+  ) async {
+    final dio = ref.read(dioProvider);
 
+    final response = await dio.get(
+      '/doctors/top',
+      queryParameters: {
+        'page': page,
+        'pagesize': pageSize,
+        
+      },
+    );
+
+    // parse list
+    final data = (response.data['data'] as List?) ?? <dynamic>[];
+    final doctors = data.map((e) => Doctor.fromDoctorApi(e)).toList();
+    return doctors;
+  }
   static Future<DoctorCapacity> getDoctorCapacity(
     String id,
     Ref ref,

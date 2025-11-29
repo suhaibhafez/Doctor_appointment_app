@@ -25,7 +25,12 @@ void main() async {
   runApp(
     ProviderScope(
       child: const MyApp(),
-      retry: (retryCount, error) => null,
+      retry: (retryCount, error) {
+        if (retryCount > 3) {
+          return null;
+        }
+        return const Duration(seconds: 2);
+      },
     ),
   );
 }

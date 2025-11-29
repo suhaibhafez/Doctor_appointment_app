@@ -1,3 +1,4 @@
+import 'package:doctor_appointment_app/l10n/app_localizations.dart';
 import 'package:doctor_appointment_app/models/Patient/billing.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
 import 'package:doctor_appointment_app/view/components/Common/cool_button.dart';
@@ -18,9 +19,10 @@ class BillingPage extends ConsumerWidget {
     final notifier = ref.watch(billingsProvider.notifier);
     Config().init(context);
     return Scaffold(
-      appBar: const CustomAppbar(
-        appTitle: 'Billings',
-        icon: FaIcon(Icons.arrow_back_ios),
+      appBar: CustomAppbar(
+        appTitle: AppLocalizations.of(context)!.billings,
+
+        icon: const FaIcon(Icons.arrow_back_ios),
       ),
       body: SafeArea(
         child: Padding(
@@ -32,7 +34,7 @@ class BillingPage extends ConsumerWidget {
             child: billingsState.when(
               data: (billings) {
                 return billings.isEmpty
-                    ? const Center(child: Text('No doctors found'))
+                    ? const Center(child: Text('No Billings found'))
                     : NotificationListener<ScrollNotification>(
                         onNotification: (scrollInfo) {
                           if (scrollInfo.metrics.pixels >=
@@ -76,7 +78,7 @@ class BillingPage extends ConsumerWidget {
                                     isSmall: isSmall,
                                     onclick: () async =>
                                         await notifier.loadMore(),
-                                    text: "اعادة المحاولة",
+                                    text: AppLocalizations.of(context)!.retry,
                                     icon: const Icon(
                                       Icons.refresh,
                                       color: Colors.white,
@@ -109,7 +111,7 @@ class BillingPage extends ConsumerWidget {
                 child: ErrorPopUp(
                   title: 'Something went wrong',
                   content: err.toString(),
-                  buttonText: 'Retry',
+                  buttonText: AppLocalizations.of(context)!.retry,
                   onOk: () async {
                     await notifier.refresh();
                   },
@@ -132,7 +134,7 @@ class BillingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-
+    final t = AppLocalizations.of(context)!;
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 3,
@@ -147,7 +149,7 @@ class BillingCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Billing Summary',
+                  t.localeName == 'en' ? 'Billing Summary' : 'ملخص الفاتورة',
                   style: theme.textTheme.titleMedium!.copyWith(
                     fontWeight: FontWeight.w700,
                     color: isDark ? Colors.white : Config.primaryColor,
@@ -174,7 +176,7 @@ class BillingCard extends StatelessWidget {
             // 👩‍⚕️ Patient Info
             _infoRow(
               icon: Icons.person,
-              label: 'Patient',
+              label: t.patient,
               value: billing.patient?.fullName ?? '-',
               context: context,
             ),
@@ -183,7 +185,7 @@ class BillingCard extends StatelessWidget {
             // 👨‍⚕️ Doctor Info
             _infoRow(
               icon: Icons.medical_information_outlined,
-              label: 'Doctor',
+              label: t.doctor,
               value:
                   '${billing.doctor?.firstName ?? ''} ${billing.doctor?.lastName ?? ''}',
               context: context,
@@ -194,13 +196,13 @@ class BillingCard extends StatelessWidget {
             Row(
               children: [
                 const Icon(
-                  Icons.attach_money,
+                  FontAwesomeIcons.poundSign,
                   size: 20,
                   color: Config.accentColor,
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  '${billing.paidAmount} / ${billing.totalAmount} SAR',
+                  '${billing.paidAmount} / ${billing.totalAmount} ${t.localeName == 'en' ? 'SYP' : "ل.س"}',
                   style: theme.textTheme.bodyMedium!.copyWith(
                     fontWeight: FontWeight.bold,
                     color: isDark ? Colors.white70 : Config.primaryColor,
@@ -215,7 +217,7 @@ class BillingCard extends StatelessWidget {
             // 🗓️ Dates
             _infoRow(
               icon: Icons.calendar_today,
-              label: 'Issued',
+              label: t.issued,
               value: _formatDate(billing.dateIssued),
               context: context,
               small: true,
@@ -223,7 +225,7 @@ class BillingCard extends StatelessWidget {
             if (billing.paymentDate != null)
               _infoRow(
                 icon: Icons.payments_rounded,
-                label: 'Paid On',
+                label: t.paidOn,
                 value: _formatDateTime(billing.paymentDate!),
                 context: context,
                 small: true,
@@ -300,7 +302,7 @@ class BillingCard extends StatelessWidget {
         border: Border.all(color: textColor.withOpacity(0.3), width: 0.8),
       ),
       child: Text(
-        status,
+        status == 'Paid' ? AppLocalizations.of(context)!.paid : status,
         style: Theme.of(context).textTheme.bodySmall!.copyWith(
           color: textColor,
           fontWeight: FontWeight.bold,
