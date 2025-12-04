@@ -37,14 +37,15 @@ class MainLayout extends ConsumerWidget {
           // If patient is null, it means either not logged in or token expired
           return Scaffold(
             body: Center(
-              child:notifier.isLoggingOut?const Loading(message: 'Signing out',): ErrorPopUp(
-                title: 'Session Expired',
-                content: 'Please sign in again',
+              child:!notifier.isSessionExpired?const Loading(message: 'Signing out',): ErrorPopUp(
+                title: 'Please sign in again',
+                content: '',
                 buttonText: 'Sign in',
                 onOk: () async {
                   await ref.read(patientNotifier.notifier).logout();
                   Get.offAllNamed(Sroutes.auth);
                 },
+                cantGetBack: true,
               ),
             ),
           );
@@ -277,7 +278,7 @@ class _SignalRConnectionWidgetState
       await ref.read(appointmentsProvider.notifier).refresh();
 
       LogService.w('✅ Providers refreshed immediately');
-      _showNotificationPopup(notification);
+      // _showNotificationPopup(notification);
     } catch (e) {
       LogService.e('❌ Error handling notification', e);
     }

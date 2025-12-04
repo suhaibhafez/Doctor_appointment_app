@@ -57,7 +57,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
     ref.listen(patientNotifier, (previous, next) async {
       if (next.isLoading) {
         if (!Get.isDialogOpen!) {
-          await Get.dialog(const Loading(),);
+          await Get.dialog(const Loading(message: 'Creating your account',),);
         }
       } else {
         if (Get.isDialogOpen!) Get.back();

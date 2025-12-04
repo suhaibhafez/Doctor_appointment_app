@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:doctor_appointment_app/models/Appointment/review.dart';
 import 'package:doctor_appointment_app/models/Patient/allergy.dart';
@@ -5,6 +7,7 @@ import 'package:doctor_appointment_app/models/Patient/billing.dart';
 import 'package:doctor_appointment_app/models/Patient/chronic_disease.dart';
 import 'package:doctor_appointment_app/models/Patient/medical_record.dart';
 import 'package:doctor_appointment_app/models/Patient/patient.dart';
+import 'package:doctor_appointment_app/services/log_service.dart';
 import 'package:doctor_appointment_app/view_model/dio.dart';
 import 'package:doctor_appointment_app/services/local_storage_services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,11 +29,7 @@ class PatientService {
 
     final String token = response.data['accessToken'];
     final String userID = response.data['user']['id'];
-    final Map<String, String> data = {
-      'token':token,
-      'userId':userID
-
-    };
+    final Map<String, String> data = {'token': token, 'userId': userID};
     return data;
   }
 
@@ -239,5 +238,61 @@ class PatientService {
       data: {"rating": rating, "comment": comment},
     );
     return Review.fromJson(response.data['data']);
+  }
+
+static Future<Uint8List?> getPatientAvatar({
+    required String id,
+    required String token,
+    required Ref ref,
+  }) async {
+    try {
+      final dio = ref.read(dioProvider);
+      final response = await dio.get(
+        '/users/$id/avatar',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+          responseType: ResponseType.bytes, // Important: receive as bytes
+        ),
+      );
+
+      return response.data as Uint8List;
+    } catch (e) {
+     LogService.e('Error fetching avatar:',e);
+      return null;
+    }
+  }
+   static Future<bool> uploadPatientAvatar({
+    required String token,
+    required Uint8List imageBytes,
+    required String fileName,
+    required Ref ref,
+  }) async {
+    try {
+      final dio = ref.read(dioProvider);
+
+      final formData = FormData.fromMap({
+        'File': MultipartFile.fromBytes(
+          imageBytes,
+          filename: fileName,
+        ),
+      });
+
+      final response = await dio.put(
+        '/users/me/avatar',
+        data: formData,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      return response.statusCode == 204;
+    } catch (e) {
+      LogService.e('Error uploading avatar:', e);
+      return false;
+    }
   }
 }

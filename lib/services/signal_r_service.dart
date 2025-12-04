@@ -7,11 +7,6 @@ import 'package:signalr_netcore/ihub_protocol.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 
 // lib/services/signal_r_service.dart
-import 'dart:async';
-import 'package:doctor_appointment_app/models/notification_model.dart';
-import 'package:doctor_appointment_app/services/log_service.dart';
-import 'package:signalr_netcore/ihub_protocol.dart';
-import 'package:signalr_netcore/signalr_client.dart';
 
 class SignalRService {
   HubConnection? _connection;

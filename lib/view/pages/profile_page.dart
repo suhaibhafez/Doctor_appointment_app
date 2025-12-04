@@ -1,9 +1,14 @@
+import "dart:io";
+import "dart:typed_data";
+
 import "package:doctor_appointment_app/l10n/app_localizations.dart";
 import "package:doctor_appointment_app/models/Patient/allergy.dart";
 import "package:doctor_appointment_app/models/Patient/chronic_disease.dart";
 import "package:doctor_appointment_app/models/Patient/patient.dart";
+import "package:doctor_appointment_app/services/log_service.dart";
 import "package:doctor_appointment_app/view_model/Patient/allergy.dart";
 import "package:doctor_appointment_app/view_model/Patient/chronic_disease.dart";
+import "package:doctor_appointment_app/view_model/Patient/pateint_avatar.dart";
 
 import "package:doctor_appointment_app/view_model/Patient/patient.dart";
 import "package:doctor_appointment_app/view_model/settings.dart";
@@ -20,6 +25,7 @@ import "package:flutter_riverpod/flutter_riverpod.dart";
 import "package:font_awesome_flutter/font_awesome_flutter.dart";
 
 import "package:get/route_manager.dart";
+import "package:image_picker/image_picker.dart";
 import "package:intl/intl.dart";
 
 class ProfilePage extends ConsumerWidget {
@@ -92,9 +98,329 @@ class ProfilePage extends ConsumerWidget {
   }
 }
 
-//
-// 🩺 1️⃣ Patient Details Section
-//
+class PatientAvatar extends ConsumerWidget {
+  final double radius;
+  final bool editable;
+
+  const PatientAvatar({
+    super.key,
+    this.radius = 55,
+    this.editable = false,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final avatarAsync = ref.watch(patientAvatarProvider);
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        CircleAvatar(
+          radius: radius,
+          backgroundColor: Colors.transparent,
+          child: avatarAsync.when(
+            data: (avatarData) {
+              if (avatarData != null && avatarData.isNotEmpty) {
+                return CircleAvatar(
+                  radius: radius,
+                  backgroundImage: MemoryImage(avatarData),
+                  backgroundColor: Colors.transparent,
+                );
+              } else {
+                return _buildPlaceholder(theme);
+              }
+            },
+            loading: () => _buildPlaceholder(theme),
+            error: (error, stackTrace) {
+              LogService.e('Error loading avatar:', error);
+              return _buildPlaceholder(theme);
+            },
+          ),
+        ),
+
+        if (editable)
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: GestureDetector(
+              onTap: () => _showImagePicker(context, ref),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: theme.colorScheme.background,
+                    width: 2,
+                  ),
+                ),
+                child: Icon(
+                  Icons.camera_alt,
+                  size: radius * 0.3,
+                  color: theme.colorScheme.onPrimary,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildPlaceholder(ThemeData theme) {
+    return Icon(
+      Icons.person_outline,
+      size: radius * 1.27,
+      color: theme.colorScheme.primary.withOpacity(0.7),
+    );
+  }
+
+  void _showImagePicker(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.background,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 16),
+              Text(
+                'Change Profile Photo',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildImageOptionTile(
+                context,
+                icon: Icons.photo_library,
+                title: 'Choose from Gallery',
+                subtitle: 'Select from your device',
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImageFromGallery(ref);
+                },
+              ),
+              _buildImageOptionTile(
+                context,
+                icon: Icons.photo_camera,
+                title: 'Take Photo',
+                subtitle: 'Use your camera',
+                onTap: () {
+                  Navigator.pop(context);
+                  _takePhoto(ref);
+                },
+              ),
+              const SizedBox(height: 8),
+              Container(
+                margin: const EdgeInsets.all(16),
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Theme.of(context).colorScheme.onBackground,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text('Cancel'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageOptionTile(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Container(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(
+          icon,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
+      title: Text(
+        title,
+        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+        ),
+      ),
+      trailing: Icon(
+        Icons.chevron_right,
+        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+      ),
+      onTap: onTap,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    );
+  }
+
+  Future<void> _pickImageFromGallery(WidgetRef ref) async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
+      );
+
+      if (image != null) {
+        await _handleImageSelection(File(image.path), ref);
+      }
+    } catch (e) {
+      LogService.e('Error picking image from gallery:', e);
+      // _showErrorSnackbar('Error selecting image');
+    }
+  }
+
+  Future<void> _takePhoto(WidgetRef ref) async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.camera,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
+      );
+
+      if (image != null) {
+        await _handleImageSelection(File(image.path), ref);
+      }
+    } catch (e) {
+      LogService.e('Error taking photo:', e);
+      // _showErrorSnackbar('Error taking photo');
+    }
+  }
+
+  Future<void> _handleImageSelection(
+    File imageFile,
+    WidgetRef ref,
+  ) async {
+    try {
+      final Uint8List imageBytes = await imageFile.readAsBytes();
+
+      // Show loading indicator
+      // _showLoadingSnackbar('Uploading avatar...');
+
+      // Upload the image
+      final uploadResult = await ref.read(
+        uploadAvatarProvider(imageBytes).future,
+      );
+
+      // Close loading snackbar
+      // _closeSnackbars();
+
+      if (uploadResult == true) {
+        // Use a more reliable refresh approach
+        await _refreshAvatar(ref);
+        // _showSuccessSnackbar('Avatar updated successfully');
+      }
+    } catch (e) {
+      // _closeSnackbars();
+      LogService.e('Error handling image selection:', e);
+      // _showErrorSnackbar('Error processing image: ${e.toString()}');
+    }
+  }
+
+  Future<void> _refreshAvatar(WidgetRef ref) async {
+    try {
+      // Method 1: Invalidate and refresh
+      ref.invalidate(patientAvatarProvider);
+
+      // Method 2: Use refresh trigger
+      ref.read(avatarRefreshProvider.notifier).update((state) => state + 1);
+
+      // Method 3: Force a small delay and refresh again
+      await Future.delayed(const Duration(milliseconds: 500));
+      ref.invalidate(patientAvatarProvider);
+
+      LogService.i('Avatar refresh triggered');
+    } catch (e) {
+      LogService.e('Error refreshing avatar:', e);
+    }
+  }
+
+
+  // void _showLoadingSnackbar(String message) {
+  //   // _closeSnackbars();
+    
+  //     Get.snackbar(
+  //       'Uploading',
+  //       message,
+  //       backgroundColor: Colors.blue.shade700,
+  //       colorText: Colors.white,
+  //       snackPosition: SnackPosition.BOTTOM,
+  //       duration: const Duration(seconds: 30),
+  //       margin: const EdgeInsets.all(16),
+  //       borderRadius: 10,
+  //       showProgressIndicator: true,
+  //       isDismissible: false,
+  //     );
+    
+  // }
+
+  // void _showSuccessSnackbar(String message) {
+  //   // _closeSnackbars();
+  //   Future.delayed(Duration.zero, () {
+  //     Get.snackbar(
+  //       'Success',
+  //       message,
+  //       backgroundColor: Colors.green,
+  //       colorText: Colors.white,
+  //       snackPosition: SnackPosition.BOTTOM,
+  //       duration: const Duration(seconds: 3),
+  //       margin: const EdgeInsets.all(16),
+  //       borderRadius: 10,
+  //     );
+  //   });
+  // }
+
+  // void _showErrorSnackbar(String message) {
+  //   // _closeSnackbars();
+  //   Future.delayed(Duration.zero, () {
+  //     Get.snackbar(
+  //       'Error',
+  //       message,
+  //       backgroundColor: Colors.red,
+  //       colorText: Colors.white,
+  //       snackPosition: SnackPosition.BOTTOM,
+  //       duration: const Duration(seconds: 4),
+  //       margin: const EdgeInsets.all(16),
+  //       borderRadius: 10,
+  //     );
+  //   });
+  // }
+}
+
 class PatientDetailsSection extends ConsumerWidget {
   const PatientDetailsSection({super.key, required this.patient});
   final Patient patient;
@@ -135,14 +461,8 @@ class PatientDetailsSection extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      child: CircleAvatar(
-                        radius: 55,
-                        backgroundColor: Colors.transparent,
-                        child: Icon(
-                          Icons.person_outline,
-                          size: 70,
-                          color: theme.colorScheme.primary.withOpacity(0.7),
-                        ),
+                      child: const PatientAvatar(
+                        editable: true,
                       ),
                     ),
                     const SizedBox(width: 24),

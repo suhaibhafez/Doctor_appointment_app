@@ -44,12 +44,29 @@ class AppointmentCard extends ConsumerWidget {
   // 🟦 Status badge
 
   // 🟧 Action buttons depending on status
+  Color _getDisabledBackgroundColor(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+    return brightness == Brightness.dark
+        ? Colors
+              .grey
+              .shade800 // Dark mode disabled background
+        : Colors.grey.shade300; // Light mode disabled background
+  }
+
+  Color _getDisabledForegroundColor(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+    return brightness == Brightness.dark
+        ? Colors
+              .grey
+              .shade500 // Dark mode disabled text
+        : Colors.grey.shade600; // Light mode disabled text
+  }
 
   bool _isWithinCancellationPeriod(Appointment appointment) {
     try {
       final appointmentDateTime = _parseAppointmentDateTime(appointment);
       final now = DateTime.now();
-      return appointmentDateTime.difference(now).inHours > 24;
+      return appointmentDateTime.difference(now).inMinutes > 1440;
     } catch (e) {
       return false;
     }
@@ -99,68 +116,80 @@ class AppointmentCard extends ConsumerWidget {
           style: buttonStyle.copyWith(
             backgroundColor: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.disabled)) {
-                return Colors.grey.shade300; // Disabled background
+                return _getDisabledBackgroundColor(context);
               }
-              return Theme.of(context).colorScheme.error; // Normal background
+              return Theme.of(context).colorScheme.error;
             }),
             foregroundColor: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.disabled)) {
-                return Colors.grey.shade500; // Disabled text color
+                return _getDisabledForegroundColor(context);
               }
-              return Colors.white; // Normal text color
+              return Colors.white;
             }),
             overlayColor: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.disabled)) {
-                return Colors.transparent; // No overlay when disabled
+                return Colors.transparent;
               }
-              return Colors.white.withOpacity(0.1); // Normal overlay
+              return Colors.white.withOpacity(0.1);
             }),
             elevation: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.disabled)) {
-                return 0; // No shadow when disabled
+                return 0;
               }
-              return 4; // Normal elevation
+              return 4;
+            }),
+            shadowColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) {
+                return Colors.transparent;
+              }
+              return Theme.of(context).colorScheme.shadow;
             }),
           ),
           child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
-          onPressed: _isWithinCancellationPeriod(appointment) ? () async{
-             await Get.toNamed(
+          onPressed: _isWithinCancellationPeriod(appointment)
+              ? () async {
+                  await Get.toNamed(
                     Sroutes.bookingPage,
                     parameters: {
                       'docId': appointment.doctor.id,
                       'facId': appointment.facility.id,
-                      'appId':appointment.id,
-                      
+                      'appId': appointment.id,
                     },
                   );
-
-          } : null,
+                }
+              : null,
           style: buttonStyle.copyWith(
             backgroundColor: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.disabled)) {
-                return Colors.grey.shade300; // Disabled background
+                return _getDisabledBackgroundColor(context);
               }
-              return Config.primaryColor; // Normal background
+              return Config.primaryColor;
             }),
             foregroundColor: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.disabled)) {
-                return Colors.grey.shade500; // Disabled text color
+                return _getDisabledForegroundColor(context);
               }
-              return Colors.white; // Normal text color
+              return Colors.white;
             }),
             overlayColor: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.disabled)) {
-                return Colors.transparent; // No overlay when disabled
+                return Colors.transparent;
               }
-              return Colors.white.withOpacity(0.1); // Normal overlay
+              return Colors.white.withOpacity(0.1);
             }),
             elevation: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.disabled)) {
-                return 0; // No shadow when disabled
+                return 0;
               }
-              return 4; // Normal elevation
+              return 4;
+            }),
+            shadowColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.disabled)) {
+                return Colors.transparent;
+              }
+              return Theme.of(context).colorScheme.shadow;
             }),
           ),
           child: Text(
@@ -462,7 +491,7 @@ class _ExistingReviewDisplay extends StatelessWidget {
         Config.spaceSmall,
 
         // 💬 Comment
-        if (review.comment != null)
+        if (review.comment != null && review.comment!.isNotEmpty)
           Container(
             constraints: const BoxConstraints(
               maxHeight: 150, // dialog-safe height

@@ -49,7 +49,7 @@ class _LoginFormState extends ConsumerState<LoginForm> {
     ref.listen(patientNotifier, (previous, next) async {
       if (next.isLoading) {
         if (!Get.isDialogOpen!) {
-          await Get.dialog(const Loading(), barrierDismissible: false);
+          await Get.dialog(const Loading(message: 'Signing you in...',), barrierDismissible: false);
         }
       } else {
         if (Get.isDialogOpen!) Get.back();
@@ -63,9 +63,9 @@ class _LoginFormState extends ConsumerState<LoginForm> {
        FocusManager.instance.primaryFocus?.unfocus();
 
           await Get.dialog(
-             ErrorPopUp(
-              title: 'Something went wrong',
-              content: error.toString(),
+            const ErrorPopUp(
+              title: 'Sign in failed',
+              content: 'Please check your credentials',
             ),
           );
         },

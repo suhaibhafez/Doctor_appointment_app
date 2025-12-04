@@ -23,10 +23,12 @@ final patientNotifier = AsyncNotifierProvider<PatientNotifier, Patient?>(
 class PatientNotifier extends AsyncNotifier<Patient?> {
   bool _shouldRetry = true;
   bool isLoggingOut = false;
+  bool isSessionExpired = false;
   @override
   FutureOr<Patient?> build() async {
     state = const AsyncValue.loading();
     if (!_shouldRetry) {
+       // Stop infinite retries
       return null;
     }
 
@@ -39,14 +41,17 @@ class PatientNotifier extends AsyncNotifier<Patient?> {
     try {
       final patient = await getPatient(token);
       LogService.i('Successfully loaded patient');
-      _shouldRetry = true; // Reset for future retries
+      _shouldRetry = true;
+       // Reset for future retries
       return patient;
     } on DioException catch (error) {
       if (error.response?.statusCode == 401) {
         LogService.i('Token expired, stopping retries');
         await LocalStorageService.clearToken();
         await LocalStorageService.clearUserId();
-        _shouldRetry = false; // Stop infinite retries
+        _shouldRetry = false;
+        isSessionExpired = true;
+        ref.notifyListeners(); // Stop infinite retries
         return null;
       }
 
@@ -108,6 +113,7 @@ class PatientNotifier extends AsyncNotifier<Patient?> {
       await LocalStorageService.clearUserId();
 
       state = const AsyncValue.data(null);
+
       LogService.i('Logging out Success');
     } catch (error, stackTrace) {
       LogService.e('Logging out Failed', error);

@@ -5,7 +5,7 @@ class Config {
   static MediaQueryData? mediaQueryData;
   static double? screenWidth;
   static double? screenHeight;
-  static final String baseUrl = 'http://192.168.1.105:5001';
+  static final String baseUrl = 'http://192.168.54.238:5001';
   //width and height initialization
   void init(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);

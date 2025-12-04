@@ -5,7 +5,7 @@ import 'package:doctor_appointment_app/services/appointment_services.dart';
 import 'package:doctor_appointment_app/services/local_storage_services.dart';
 import 'package:doctor_appointment_app/services/log_service.dart';
 import 'package:doctor_appointment_app/view_model/notification.dart';
-import 'package:flutter/rendering.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AppointmentsNotifier extends AsyncNotifier<List<Appointment>> {
@@ -166,7 +166,7 @@ class AppointmentsNotifier extends AsyncNotifier<List<Appointment>> {
 
         await refresh();
       }
-      LogService.i('Status on cancelling:${status}');
+      LogService.i('Status on cancelling:$status');
     } catch (e, st) {
       cacellingError = AsyncError(e, st);
       ref.notifyListeners();

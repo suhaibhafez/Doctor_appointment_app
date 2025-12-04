@@ -5,7 +5,6 @@ import 'package:doctor_appointment_app/routes/routes.dart';
 import 'package:doctor_appointment_app/utils/config.dart';
 import 'package:doctor_appointment_app/utils/enums/specialitiez_facilities.dart';
 import 'package:doctor_appointment_app/view/components/AppointmentsComponents/appointment_card.dart';
-import 'package:doctor_appointment_app/view/components/Common/cool_button.dart';
 import 'package:doctor_appointment_app/view/components/Common/error_pop_up.dart';
 import 'package:doctor_appointment_app/view/components/Common/shimmer.dart';
 import 'package:doctor_appointment_app/view/components/DoctorsComponents/doctor_card.dart';

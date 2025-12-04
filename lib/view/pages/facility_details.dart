@@ -539,7 +539,7 @@ class _FacilityUploadsState extends ConsumerState<FacilityUploads> {
     return uploads.when(
       data: (upload) {
         if (upload.isEmpty) {
-          return const NoAppointmentsCard();
+          return const SizedBox.shrink();
         }
 
         return Column(
